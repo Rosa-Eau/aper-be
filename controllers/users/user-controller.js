@@ -13,8 +13,7 @@ exports.registerUser = async (req, res) => {
         const data = {
             penName: req.body.penName,
             email: req.body.email.toLowerCase(),
-            password: passwordHash,
-            backgroundImage : req.body.backgroundImage
+            password: passwordHash
         };
 
         const storedUser = await usersDataAccess.storeUser(data);
@@ -73,3 +72,39 @@ exports.loginUser = async (req, res) => {
         })
     }
 };
+
+
+
+exports.updateBackground = async(req,res) =>{
+    try {
+        let Email = req.body.email
+        let backgroundImage = req.body.backgroundImage
+        const updateImage = {
+          Email,
+          toUpdate: {
+            backgroundImage,
+          },
+        };
+        const updatedProfile = await usersDataAccess.updateUser(updateImage);
+      if (updatedProfile){
+
+          res.json({
+              message: "Image Uploaded",
+              data : updatedProfile,
+              status: res.statusCode
+          })
+      }
+      else {
+        res.json({
+            message: "User not found",
+            status: 404
+        })
+      }
+        
+    } catch (err) {
+        res.json( {
+            message: "Something went wrong",
+            error : err.message
+          });
+    }
+}

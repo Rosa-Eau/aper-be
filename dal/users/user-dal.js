@@ -16,9 +16,18 @@ const findUserByUsername = async (username) => {
     return user;
   };
 
-
+  const updateUser = async (userData) => {
+    const user = await User.findOneAndUpdate(
+       { email: userData.Email },
+      { $set: userData.toUpdate },
+      { new: true }
+    );
+    return user;
+  };
+  
   
 module.exports = {
     storeUser,
-    findUserByUsername
+    findUserByUsername,
+    updateUser
 };
