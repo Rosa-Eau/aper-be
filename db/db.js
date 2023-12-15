@@ -1,6 +1,6 @@
 // const { MongoClient, ServerApiVersion } = require('mongodb');
 const mongoose = require('mongoose')
-const uri = "mongodb+srv://xyz:abc@mycluster.cb7ytsf.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://apercreatorclub:apercreator@cluster0.pfvujjo.mongodb.net/?retryWrites=true&w=majority";
 
 const mongoConnection = ()=>{
   const connection = mongoose.connect(uri)

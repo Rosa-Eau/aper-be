@@ -12,7 +12,7 @@ exports.registerUser = async (req, res) => {
         const passwordHash = bcrypt.hashSync(req.body.password, 10);
         const data = {
             penName: req.body.penName,
-            email: req.body.email.toLowerCase(),
+            email: req.body.email,
             password: passwordHash
         };
 
@@ -31,38 +31,43 @@ exports.registerUser = async (req, res) => {
             message: "Something went wrong",
             error: err, message,
             status: res.statusCode
-        })
-    }
+                                                                                                                                                                                                                                                })
+                                                                                                                                                                                                                                            }
 }
 
 exports.loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password } = req.body;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
         if (!email || !password) {
-            console.log("nothing")
+            console.log("email and password is required")
 
         }
+        
         const userData = await usersDataAccess.findUserByUsername({
-            email: req.body.email.toLowerCase(),
+            email: email,
         });
-        if (!userData) {
+        if (userData){
+
+            const match = bcrypt.compareSync(req.body.password, userData.password);
+            if (!match) {
+                res.json({
+                    message: "Password is incorrect"
+                })
+            }
+            const token = generateAccessToken({ _id: userData._id });
             res.json({
-                message: "Invalid User",
+                message: "User Logged in",
+                data : userData,
+                auth : token,
                 status: res.statusCode
             })
         }
-        const match = bcrypt.compareSync(req.body.password, userData.password);
-        if (!match) {
+        else {
             res.json({
-                message: "Password is incorrect"
+                message: "user not found"
             })
         }
-        const token = generateAccessToken({ _id: userData._id });
-        res.json({
-            message: "User Logged in",
-            token,
-            status: res.statusCode
-        })
+     
     }
     catch (err) {
         res.json({
@@ -78,7 +83,7 @@ exports.loginUser = async (req, res) => {
 exports.updateBackground = async(req,res) =>{
     try {
         let Email = req.body.email
-        let backgroundImage = req.body.backgroundImage
+        let backgroundImage = "uploads/" + req.file.filename;
         const updateImage = {
           Email,
           toUpdate: {

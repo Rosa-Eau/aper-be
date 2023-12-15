@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();;
 const bodyParser = require('body-parser');
+const path = require ('path')
 app.use(bodyParser.json());
 // Parse URL-encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -12,6 +13,10 @@ const userRouter = require("./routes/users/user-route");
 const storyRouter = require("./routes/stories/story-route");
 app.use(cors())
 app.use(express.json())
+
+//implementing static path
+app.use(express.static(path.join("uploads", '../public')));
+
 require('mongoose')
 require('./db/db')
 
