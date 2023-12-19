@@ -25,9 +25,14 @@ const findUserByUsername = async (username) => {
     return user;
   };
   
+  const findUserById = async (id) =>{
+    const user = await User.findById(id);
+    return user;
+  }
   
 module.exports = {
     storeUser,
     findUserByUsername,
-    updateUser
+    updateUser,
+    findUserById
 };

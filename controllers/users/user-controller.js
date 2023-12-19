@@ -29,24 +29,24 @@ exports.registerUser = async (req, res) => {
     } catch (err) {
         res.json({
             message: "Something went wrong",
-            error: err, message,
+            error: err.message,
             status: res.statusCode
-                                                                                                                                                                                                                                                })
-                                                                                                                                                                                                                                            }
+        })
+    }
 }
 
 exports.loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+        const { email, password } = req.body;
         if (!email || !password) {
             console.log("email and password is required")
 
         }
-        
+
         const userData = await usersDataAccess.findUserByUsername({
             email: email,
         });
-        if (userData){
+        if (userData) {
 
             const match = bcrypt.compareSync(req.body.password, userData.password);
             if (!match) {
@@ -57,8 +57,8 @@ exports.loginUser = async (req, res) => {
             const token = generateAccessToken({ _id: userData._id });
             res.json({
                 message: "User Logged in",
-                data : userData,
-                auth : token,
+                data: userData,
+                auth: token,
                 status: res.statusCode
             })
         }
@@ -67,7 +67,7 @@ exports.loginUser = async (req, res) => {
                 message: "user not found"
             })
         }
-     
+
     }
     catch (err) {
         res.json({
@@ -80,71 +80,99 @@ exports.loginUser = async (req, res) => {
 
 
 
-exports.updateBackground = async(req,res) =>{
+exports.updateBackground = async (req, res) => {
     try {
         let Email = req.body.email
         let backgroundImage = "uploads/" + req.file.filename;
         const updateImage = {
-          Email,
-          toUpdate: {
-            backgroundImage,
-          },
+            Email,
+            toUpdate: {
+                backgroundImage,
+            },
         };
         const updatedProfile = await usersDataAccess.updateUser(updateImage);
-      if (updatedProfile){
+        if (updatedProfile) {
 
-          res.json({
-              message: "Image Uploaded",
-              data : updatedProfile,
-              status: res.statusCode
-          })
-      }
-      else {
-        res.json({
-            message: "User not found",
-            status: 404
-        })
-      }
-        
+            res.json({
+                message: "Image Uploaded",
+                data: updatedProfile,
+                status: res.statusCode
+            })
+        }
+        else {
+            res.json({
+                message: "User not found",
+                status: 404
+            })
+        }
+
     } catch (err) {
-        res.json( {
+        res.json({
             message: "Something went wrong",
-            error : err.message
-          });
+            error: err.message
+        });
     }
 }
 
 
-exports.updateProfileDescription = async(req,res) =>{
+exports.updateProfileDescription = async (req, res) => {
     try {
         let Email = req.body.email;
         let description = req.body.description;
         const updateDescription = {
-          Email,
-          toUpdate: {
-            description,
-          },
+            Email,
+            toUpdate: {
+                description,
+            },
         };
         const updatedProfile = await usersDataAccess.updateUser(updateDescription);
-      if (updatedProfile){
+        if (updatedProfile) {
 
-          res.json({
-              message: "Description Updated",
-              data : updatedProfile,
-              status: res.statusCode
-          })
-      }
-      else {
-        res.json({
-            message: "User not found",
-            status: 404
-        })
-      }
-        
+            res.json({
+                message: "Description Updated",
+                data: updatedProfile,
+                status: res.statusCode
+            })
+        }
+        else {
+            res.json({
+                message: "User not found",
+                status: 404
+            })
+        }
+
     } catch (err) {
-        res.json( {
+        res.json({
             message: "Something went wrong",
-            error : err.message
-          });
+            error: err.message
+        });
     }
 }
+
+exports.getUserDetails = async (req, res) => {
+    try {
+        let id = req.token_data._id ;
+        const userData = await usersDataAccess.findUserById(id);
+        if (userData) {
+            res.json({
+                message: "User found successfully",
+                data: userData,
+                status: res.statusCode
+            })
+        }
+        else {
+            res.json({
+                message: "User not found",
+                status: 404
+            })
+        }
+
+    } catch (err) {
+        res.json({
+            message: "Something went wrong",
+            error: err.message,
+            status: res.statusCode
+        })
+    }
+}
+
