@@ -8,12 +8,16 @@ const signUpSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true  
     },
     password: {
         type: String
     },
     backgroundImage : {
+        type : String
+    },
+    description : {
         type : String
     }
 })

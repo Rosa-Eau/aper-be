@@ -113,3 +113,38 @@ exports.updateBackground = async(req,res) =>{
           });
     }
 }
+
+
+exports.updateProfileDescription = async(req,res) =>{
+    try {
+        let Email = req.body.email;
+        let description = req.body.description;
+        const updateDescription = {
+          Email,
+          toUpdate: {
+            description,
+          },
+        };
+        const updatedProfile = await usersDataAccess.updateUser(updateDescription);
+      if (updatedProfile){
+
+          res.json({
+              message: "Description Updated",
+              data : updatedProfile,
+              status: res.statusCode
+          })
+      }
+      else {
+        res.json({
+            message: "User not found",
+            status: 404
+        })
+      }
+        
+    } catch (err) {
+        res.json( {
+            message: "Something went wrong",
+            error : err.message
+          });
+    }
+}
