@@ -1,6 +1,17 @@
+require('dotenv').config();
 const bcrypt = require("bcrypt")
 const usersDataAccess = require("../../dal/users/user-dal")
 const { generateAccessToken } = require("../../middlewares/jsonWebToken")
+const AWS = require('aws-sdk');
+
+AWS.config.update({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: 'fUdFLrZP1jssvp4zI/Toig4JxRR2SIFvAoGcZJrN',
+    region: process.env.AWS_REGION, 
+  });
+  
+const S3 = new AWS.S3();
+
 
 exports.registerUser = async (req, res) => {
 
@@ -37,47 +48,37 @@ exports.registerUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            console.log("email and password is required")
-
-        }
-
-        const userData = await usersDataAccess.findUserByUsername({
-            email: email,
-        });
-        if (userData) {
-
-            const match = bcrypt.compareSync(req.body.password, userData.password);
-            if (!match) {
-                res.json({
-                    message: "Password is incorrect"
-                })
-            }
-            const token = generateAccessToken({ _id: userData._id });
-            res.json({
-                message: "User Logged in",
-                data: userData,
-                auth: token,
-                status: res.statusCode
-            })
-        }
-        else {
-            res.json({
-                message: "user not found"
-            })
-        }
-
+      const { email, password } = req.body;
+     
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required fields." });
+      }
+ 
+      const userData = await usersDataAccess.findUserByUsername({ email: email });
+ 
+      if (!userData) {
+        return res.status(404).json({ message: "User not found" });
+      }
+ 
+      const match = bcrypt.compareSync(req.body.password, userData.password);
+ 
+      if (!match) {
+        return res.status(401).json({ message: "Password is incorrect" });
+      }
+ 
+      const token = generateAccessToken({ _id: userData._id });
+ 
+      res.status(200).json({
+        message: "User Logged in",
+        data: userData,
+        auth: token,
+      });
+    } catch (err) {
+      console.error("Error during login:", err);
+      res.status(500).json({ message: "An unexpected error occurred. Please try again." });
     }
-    catch (err) {
-        res.json({
-            message: "Something went wrong",
-            error: err.message,
-            status: res.statusCode
-        })
-    }
-};
-
+  };
+ 
 
 
 exports.updateBackground = async (req, res) => {
@@ -90,11 +91,16 @@ exports.updateBackground = async (req, res) => {
                 backgroundImage,
             },
         };
+
+        await S3.putObject({
+            Bucket :"aper-files",
+            Key : req.file.filename,
+        }).promise()
         const updatedProfile = await usersDataAccess.updateUser(updateImage);
         if (updatedProfile) {
 
             res.json({
-                message: "Image Uploaded",
+                message: "Image uploaded",
                 data: updatedProfile,
                 status: res.statusCode
             })
