@@ -1,5 +1,6 @@
 const Story = require("../../models/stories/story-model");
 
+//Store Story
 const storeStory = async (storyToStore) => {
     try {
         console.log(storyToStore)
@@ -11,4 +12,33 @@ const storeStory = async (storyToStore) => {
     }
 };
 
-module.exports ={storeStory}
+//find Story By Id
+const findStoryById = async (id) => {
+    try {
+        const story = await Story.find({ authorId: id });
+        return story
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const updateStory = async (storyData) => {
+    try {
+        const story = await Story.findOneAndUpdate(
+            { authorId: storyData.authorId },
+            { $set: storyData.toUpdate },
+            { new: true }
+        );
+        return story;
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+const deleteStory = async (id) => {
+    const story = await Story.deleteOne({authorId : id});
+    return story;
+  };
+module.exports = { storeStory, findStoryById , updateStory , deleteStory }

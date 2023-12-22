@@ -1,6 +1,10 @@
 const mongoose = require("mongoose")
 
 const storySchema = new mongoose.Schema({
+    authorId : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "User"
+    },
     routineType : {
         type : String
     },
@@ -10,7 +14,7 @@ const storySchema = new mongoose.Schema({
     genre : {
         type : String
     },
-    styleOfWriting: {
+    lineStyle: {
         type : String
     },
     description : {
@@ -22,6 +26,9 @@ const storySchema = new mongoose.Schema({
         default: Date.now, 
     },
     authorName :{
+        type :String
+    },
+    episodeTitle :{
         type :String
     }
     
