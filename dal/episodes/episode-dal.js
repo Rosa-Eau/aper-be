@@ -12,5 +12,31 @@ const saveEpisode = async (episodeToStore) => {
     }
 };
 
+const getEpisodeById = async(id) =>{
+    try {
+        const foundeEpisode = await Episode.find({authorId : id});
+        return foundeEpisode;
+        
+    } catch (error) {
+        console.log(err)
+        
+    }
+}
+const deleteEpisode = async (id) => {
+    const episode= await Episode.deleteOne({_id : id});
+    return episode;
+  };
 
-module.exports = { saveEpisode }
+const updateEpisodeById = async (storyData) => {
+    try {
+        const episode = await Episode.findOneAndUpdate(
+            { _id: storyData.id },
+            { $set: storyData.toUpdate },
+            { new: true }
+        );
+        return episode;
+    } catch (error) {
+        console.log(error)
+    }
+}
+module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById}

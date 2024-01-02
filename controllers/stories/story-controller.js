@@ -43,7 +43,7 @@ exports.getStory = async (req, res) => {
     try {
         const authorId = req.body.authorId
         let Story = await storyDataAccess.findStoryById(authorId);
-         if (Story.length>0){
+        if (Story.length > 0) {
             res.status(200).json({
                 message: "Story Found",
                 data: Story
@@ -51,7 +51,7 @@ exports.getStory = async (req, res) => {
         }
         else {
             res.status(404).json({
-                message : "No Stories Available"
+                message: "No Stories Available"
             })
         }
     }
@@ -82,17 +82,17 @@ exports.updateStory = async (req, res) => {
         const UpdateStory = {
             authorId,
             toUpdate: {
-                routineType : fieldsToUpdate.routineType,
-                coverTitle : fieldsToUpdate.coverTitle,
-                genre : fieldsToUpdate.genre,
-                lineStyle : fieldsToUpdate.lineStyle,
-                dateOfPublication : fieldsToUpdate.dateOfPublication,
-                authorName : fieldsToUpdate.authorName
+                routineType: fieldsToUpdate.routineType,
+                coverTitle: fieldsToUpdate.coverTitle,
+                genre: fieldsToUpdate.genre,
+                lineStyle: fieldsToUpdate.lineStyle,
+                dateOfPublication: fieldsToUpdate.dateOfPublication,
+                authorName: fieldsToUpdate.authorName
             },
         };
 
         const update = await storyDataAccess.updateStory(UpdateStory);
-        if (update){
+        if (update) {
 
             res.status(200).json({
                 message: "Story Updated",
@@ -115,7 +115,7 @@ exports.updateStory = async (req, res) => {
     }
 }
 
-exports.deleteStory = async(req,res)=>{
+exports.deleteStory = async (req, res) => {
     try {
         let id = req.body.id
         const DeleteStory = await storyDataAccess.deleteStory(id);
@@ -129,32 +129,126 @@ exports.deleteStory = async(req,res)=>{
             message: "Internal Server Error",
             error: error.message,
             status: 500
-        });        
+        });
     }
 }
 //add episode
-exports.addEpisode = async (req,res)=>{
+exports.addEpisode = async (req, res) => {
     try {
         const data = {
-            authorId : req.body.authorId,
-            episodeTitle : req.body.episodeTitle,
-            description : req.body.description  
+            authorId: req.body.authorId,
+            episodeTitle: req.body.episodeTitle,
+            description: req.body.description
         }
 
         storedData = await episodeDataAccess.saveEpisode(data)
-        if(storedData){
+        if (storedData) {
             res.status(200).json({
                 message: "Episode Saved",
                 data: storedData
             });
 
         }
-        
+
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error",
             error: error.message,
             status: 500
-        }); 
+        });
     }
 }
+
+
+// getEpisode
+
+exports.getEpisode = async (req, res) => {
+    try {
+        const authorId = req.body.authorId
+        const foundEpisode = await episodeDataAccess.getEpisodeById(authorId)
+        if (foundEpisode) {
+            res.status(200).json({
+                message: "Episode Found",
+                data: foundEpisode
+            });
+
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error.message,
+            status: 500
+        });
+
+    }
+}
+
+
+//deleteEpisode
+
+exports.deleteEpisode = async (req, res) => {
+    try {
+        let id = req.body.id
+        const DeleteEpisode = await episodeDataAccess.deleteEpisode(id);
+        res.status(200).json({
+            message: "Episode deleted",
+            data: DeleteEpisode
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error.message,
+            status: 500
+        });
+    }
+
+}
+
+//updateEpisode
+
+exports.updateEpisode = async (req, res) => {
+    try {
+        let id = req.params.id
+        let fieldsToUpdate = req.body
+
+        // Validate fieldsToUpdate
+        if (!fieldsToUpdate || Object.keys(fieldsToUpdate).length === 0) {
+            return res.status(400).json({
+                message: "Fields to update are missing or empty",
+                status: 400
+            });
+        }
+
+        const UpdateEpisode = {
+            id,
+            toUpdate: {
+                episodeTitle: fieldsToUpdate.episodeTitle,
+                description: fieldsToUpdate.description
+            },
+        };
+
+        const update = await episodeDataAccess.updateEpisodeById(UpdateEpisode);
+        if (update) {
+
+            res.status(200).json({
+                message: "Episode Updated",
+                data: update
+            });
+        }
+        else {
+            res.status(404).json({
+                message: "Episode Can't be Updated because its not available"
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error.message,
+            status: 500
+        });
+    }
+}
+
