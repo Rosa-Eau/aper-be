@@ -2,8 +2,7 @@ const mongoose = require("mongoose")
 
 const storySchema = new mongoose.Schema({
     authorId : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "User"
+       type : String
     },
     routineType : {
         type : String
@@ -17,10 +16,6 @@ const storySchema = new mongoose.Schema({
     lineStyle: {
         type : String
     },
-    description : {
-        type : String
-
-    },
     dateOfPublication: {
         type: Date, 
         default: Date.now, 
@@ -28,11 +23,7 @@ const storySchema = new mongoose.Schema({
     authorName :{
         type :String
     },
-    episodeTitle :{
-        type :String
-    }
-    
- 
+
 })
 
 module.exports = mongoose.model('storie',storySchema)

@@ -1,21 +1,20 @@
 const storyDataAccess = require("../../dal/stories/story-dal")
 const usersDataAccess = require("../../dal/users/user-dal")
-
+const episodeDataAccess = require("../../dal/episodes/episode-dal")
+const uuid = require('uuid');
 // create a story
 exports.addStory = async (req, res) => {
     try {
 
         const userData = await usersDataAccess.findUserById(req.token_data._id)
         const data = {
-            authorId: userData._id,
+            authorId: uuid.v4(),
             routineType: req.body.routineType,
             coverTitle: req.body.coverTitle,
             genre: req.body.genre,
             lineStyle: req.body.lineStyle,
-            description: req.body.description,
             dateOfPublication: req.body.dateOfPublication,
-            authorName: userData?.penName,
-            episodeTitle: req.body.episodeTitle
+            authorName: userData?.penName
 
         };
 
@@ -42,7 +41,8 @@ exports.addStory = async (req, res) => {
 //get Story
 exports.getStory = async (req, res) => {
     try {
-        let Story = await storyDataAccess.findStoryById(req.token_data._id);
+        const authorId = req.body.authorId
+        let Story = await storyDataAccess.findStoryById(authorId);
          if (Story.length>0){
             res.status(200).json({
                 message: "Story Found",
@@ -65,9 +65,10 @@ exports.getStory = async (req, res) => {
     }
 }
 
+//update a story
 exports.updateStory = async (req, res) => {
     try {
-        let authorId = req.token_data._id
+        let authorId = req.params.authorId
         let fieldsToUpdate = req.body
 
         // Validate fieldsToUpdate
@@ -85,10 +86,8 @@ exports.updateStory = async (req, res) => {
                 coverTitle : fieldsToUpdate.coverTitle,
                 genre : fieldsToUpdate.genre,
                 lineStyle : fieldsToUpdate.lineStyle,
-                description : fieldsToUpdate.description,
                 dateOfPublication : fieldsToUpdate.dateOfPublication,
-                authorName : fieldsToUpdate.authorName,
-                episodeTitle : fieldsToUpdate.episodeTitle  
+                authorName : fieldsToUpdate.authorName
             },
         };
 
@@ -118,7 +117,7 @@ exports.updateStory = async (req, res) => {
 
 exports.deleteStory = async(req,res)=>{
     try {
-        let id = req.token_data._id
+        let id = req.body.id
         const DeleteStory = await storyDataAccess.deleteStory(id);
         res.status(200).json({
             message: "Story deleted",
@@ -130,8 +129,32 @@ exports.deleteStory = async(req,res)=>{
             message: "Internal Server Error",
             error: error.message,
             status: 500
-        });
+        });        
+    }
+}
+//add episode
+exports.addEpisode = async (req,res)=>{
+    try {
+        const data = {
+            authorId : req.body.authorId,
+            episodeTitle : req.body.episodeTitle,
+            description : req.body.description  
+        }
 
+        storedData = await episodeDataAccess.saveEpisode(data)
+        if(storedData){
+            res.status(200).json({
+                message: "Episode Saved",
+                data: storedData
+            });
+
+        }
         
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error.message,
+            status: 500
+        }); 
     }
 }
