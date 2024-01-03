@@ -38,7 +38,7 @@ const updateStory = async (storyData) => {
 
 
 const deleteStory = async (id) => {
-    const story = await Story.deleteOne({_id : id});
+    const story = await Story.deleteOne({_id: id});
     return story;
   };
 module.exports = { storeStory, findStoryById , updateStory , deleteStory }

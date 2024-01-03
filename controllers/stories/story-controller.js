@@ -20,6 +20,16 @@ exports.addStory = async (req, res) => {
 
         const storedStory = await storyDataAccess.storeStory(data);
         if (storedStory) {
+            let Email = userData?.email
+            const userToUpdate = {
+                Email,
+                toUpdate: {
+                    authorId : storedStory?.authorId
+                },
+            };
+    
+            await usersDataAccess.updateUser(userToUpdate)
+
             res.json({
                 message: "Story has been stored successfully",
                 data: storedStory,
