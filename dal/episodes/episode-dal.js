@@ -27,6 +27,11 @@ const deleteEpisode = async (id) => {
     return episode;
   };
 
+ const deleteEpisodeByAuthorId = async (id)=>{
+    const episode= await Episode.deleteOne({authorId : id});
+    return episode;
+ }
+ 
 const updateEpisodeById = async (storyData) => {
     try {
         const episode = await Episode.findOneAndUpdate(
@@ -39,4 +44,4 @@ const updateEpisodeById = async (storyData) => {
         console.log(error)
     }
 }
-module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById}
+module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById , deleteEpisodeByAuthorId}

@@ -127,8 +127,9 @@ exports.updateStory = async (req, res) => {
 
 exports.deleteStory = async (req, res) => {
     try {
-        let id = req.body.id
+        let id = req.body.authorId
         const DeleteStory = await storyDataAccess.deleteStory(id);
+        await episodeDataAccess.deleteEpisodeByAuthorId(id);        
         res.status(200).json({
             message: "Story deleted",
             data: DeleteStory
@@ -176,14 +177,19 @@ exports.getEpisode = async (req, res) => {
     try {
         const authorId = req.body.authorId
         const foundEpisode = await episodeDataAccess.getEpisodeById(authorId)
-        if (foundEpisode) {
+      
+        if (foundEpisode && foundEpisode.length > 0) {
             res.status(200).json({
                 message: "Episode Found",
                 data: foundEpisode
             });
-
+        } else {
+            res.status(404).json({
+                message: "No Episode Found",
+                status: 404
+            });
         }
-
+    
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error",
@@ -193,6 +199,7 @@ exports.getEpisode = async (req, res) => {
 
     }
 }
+
 
 
 //deleteEpisode
