@@ -51,7 +51,7 @@ exports.addStory = async (req, res) => {
 //get Story
 exports.getStory = async (req, res) => {
     try {
-        const authorId = req.body.authorId
+        const authorId = req.params.authorId
         let Story = await storyDataAccess.findStoryById(authorId);
         if (Story.length > 0) {
             res.status(200).json({
@@ -175,7 +175,7 @@ exports.addEpisode = async (req, res) => {
 
 exports.getEpisode = async (req, res) => {
     try {
-        const authorId = req.body.authorId
+        const authorId = req.params.authorId
         const foundEpisode = await episodeDataAccess.getEpisodeById(authorId)
       
         if (foundEpisode && foundEpisode.length > 0) {
