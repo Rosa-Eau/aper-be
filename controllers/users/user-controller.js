@@ -18,8 +18,20 @@ exports.registerUser = async (req, res) => {
     try {
         const { penName, email, password } = req.body;
         if (!penName, !password || !email) {
-            console.log('err')
+             res.status(400).json({
+                message: 'Invalid request. Please provide penName, email, and password.',
+                status: res.statusCode
+            });
         }
+
+        const existingUser = await usersDataAccess.getUserByEmail(email);
+        if (existingUser) {
+            res.status(400).json({
+                message: 'Email already exists. Please choose a different email.',
+                status: res.statusCode
+            });
+        }
+
         const passwordHash = bcrypt.hashSync(req.body.password, 10);
         const data = {
             penName: req.body.penName,

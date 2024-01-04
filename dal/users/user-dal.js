@@ -16,6 +16,11 @@ const findUserByUsername = async (username) => {
     return user;
   };
 
+const getUserByEmail = async(email) =>{
+  const user = await User.findOne({email});
+  return user;
+}
+
   const updateUser = async (userData) => {
     const user = await User.findOneAndUpdate(
        { email: userData.Email },
@@ -34,5 +39,6 @@ module.exports = {
     storeUser,
     findUserByUsername,
     updateUser,
-    findUserById
+    findUserById,
+    getUserByEmail
 };
