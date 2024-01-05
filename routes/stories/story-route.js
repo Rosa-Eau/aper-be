@@ -10,6 +10,6 @@ router.delete('/deleteStory', authenticateToken ,deleteStory);
 router.post('/add-episode', authenticateToken, addEpisode);
 router.put('/update-episode/:id',authenticateToken,updateEpisode);
 router.delete('/delete-episode',authenticateToken,deleteEpisode);
-router.get('/get-episode/:authorId',authenticateToken,getEpisode);
+router.get('/get-episode/:authorId/:id',authenticateToken,getEpisode);
 
 module.exports = router

@@ -12,9 +12,9 @@ const saveEpisode = async (episodeToStore) => {
     }
 };
 
-const getEpisodeById = async(id) =>{
+const getEpisodeById = async(authId,id) =>{
     try {
-        const foundeEpisode = await Episode.find({authorId : id});
+        const foundeEpisode = await Episode.find({authorId : authId , _id: id });
         return foundeEpisode;
         
     } catch (error) {

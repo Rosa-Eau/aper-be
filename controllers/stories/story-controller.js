@@ -176,7 +176,8 @@ exports.addEpisode = async (req, res) => {
 exports.getEpisode = async (req, res) => {
     try {
         const authorId = req.params.authorId
-        const foundEpisode = await episodeDataAccess.getEpisodeById(authorId)
+        const id = req.params.id
+        const foundEpisode = await episodeDataAccess.getEpisodeById(authorId,id)
       
         if (foundEpisode && foundEpisode.length > 0) {
             res.status(200).json({
