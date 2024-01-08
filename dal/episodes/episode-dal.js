@@ -12,16 +12,29 @@ const saveEpisode = async (episodeToStore) => {
     }
 };
 
-const getEpisodeById = async(authId,id) =>{
+const getEpisodeByIdAndAuthor = async(authId,id) =>{
     try {
-        const foundeEpisode = await Episode.find({authorId : authId , _id: id });
-        return foundeEpisode;
+        const foundEpisode = await Episode.find({authorId : authId , _id: id });
+        return foundEpisode;
         
     } catch (error) {
         console.log(err)
         
     }
 }
+
+
+const getEpisodeById =  async(Id) =>{
+    try {
+        const foundEpisode = await Episode.find({authorId : Id  });
+        return foundEpisode;
+        
+    } catch (error) {
+        console.log(err)
+        
+    }
+}
+
 const deleteEpisode = async (id) => {
     const episode= await Episode.deleteOne({_id : id});
     return episode;
@@ -44,4 +57,4 @@ const updateEpisodeById = async (storyData) => {
         console.log(error)
     }
 }
-module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById , deleteEpisodeByAuthorId}
+module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById , deleteEpisodeByAuthorId , getEpisodeByIdAndAuthor}

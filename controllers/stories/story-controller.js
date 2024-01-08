@@ -176,8 +176,7 @@ exports.addEpisode = async (req, res) => {
 exports.getEpisode = async (req, res) => {
     try {
         const authorId = req.params.authorId
-        const id = req.params.episodeId
-        const foundEpisode = await episodeDataAccess.getEpisodeById(authorId,id)
+        const foundEpisode = await episodeDataAccess.getEpisodeById(authorId)
       
         if (foundEpisode && foundEpisode.length > 0) {
             res.status(200).json({
@@ -201,7 +200,33 @@ exports.getEpisode = async (req, res) => {
     }
 }
 
+exports.getEpisodeByIdAndAuthor = async(req,res)=>{
+    try {
+        const authorId = req.params.authorId
+        const id = req.params.episodeId
+        const foundEpisode = await episodeDataAccess.getEpisodeByIdAndAuthor(authorId,id)
+      
+        if (foundEpisode && foundEpisode.length > 0) {
+            res.status(200).json({
+                message: "Episode Found",
+                data: foundEpisode
+            });
+        } else {
+            res.status(404).json({
+                message: "No Episode Found",
+                status: 404
+            });
+        }
+    
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error.message,
+            status: 500
+        });
 
+    }
+}
 
 //deleteEpisode
 
