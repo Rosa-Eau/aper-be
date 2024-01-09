@@ -1,14 +1,13 @@
 const storyDataAccess = require("../../dal/stories/story-dal")
 const usersDataAccess = require("../../dal/users/user-dal")
 const episodeDataAccess = require("../../dal/episodes/episode-dal")
-const uuid = require('uuid');
 // create a story
 exports.addStory = async (req, res) => {
     try {
 
         const userData = await usersDataAccess.findUserById(req.token_data._id)
         const data = {
-            authorId: uuid.v4(),
+            authorId: userData?._id,
             routineType: req.body.routineType,
             coverTitle: req.body.coverTitle,
             genre: req.body.genre,
