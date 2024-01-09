@@ -3,22 +3,22 @@ const bcrypt = require("bcrypt")
 const usersDataAccess = require("../../dal/users/user-dal")
 const { generateAccessToken } = require("../../middlewares/jsonWebToken")
 const AWS = require('aws-sdk');
-
+//S3 credentials
 AWS.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: 'SgI7Gz+nNgtNeJFqdBsNYj4qRJ3HbG6qBjqkiViN',
-    region: process.env.AWS_REGION, 
-  });
-  
+    region: process.env.AWS_REGION,
+});
+
 const S3 = new AWS.S3();
 
-
+//signupUser
 exports.registerUser = async (req, res) => {
 
     try {
         const { penName, email, password } = req.body;
         if (!penName, !password || !email) {
-             res.status(400).json({
+            res.status(400).json({
                 message: 'Invalid request. Please provide penName, email, and password.',
                 status: res.statusCode
             });
@@ -58,41 +58,41 @@ exports.registerUser = async (req, res) => {
     }
 }
 
+//loginUser
 exports.loginUser = async (req, res) => {
     try {
-      const { email, password } = req.body;
-     
-      if (!email || !password) {
-        return res.status(400).json({ message: "Email and password are required fields." });
-      }
- 
-      const userData = await usersDataAccess.findUserByUsername({ email: email });
- 
-      if (!userData) {
-        return res.status(404).json({ message: "User not found" });
-      }
- 
-      const match = bcrypt.compareSync(req.body.password, userData.password);
- 
-      if (!match) {
-        return res.status(401).json({ message: "Password is incorrect" });
-      }
- 
-      const token = generateAccessToken({ _id: userData._id });
- 
-      res.status(200).json({
-        message: "User Logged in",
-        data: userData,
-        auth: token,
-      });
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ message: "Email and password are required fields." });
+        }
+
+        const userData = await usersDataAccess.findUserByUsername({ email: email });
+
+        if (!userData) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const match = bcrypt.compareSync(req.body.password, userData.password);
+
+        if (!match) {
+            return res.status(401).json({ message: "Password is incorrect" });
+        }
+
+        const token = generateAccessToken({ _id: userData._id });
+
+        res.status(200).json({
+            message: "User Logged in",
+            data: userData,
+            auth: token,
+        });
     } catch (err) {
-      console.error("Error during login:", err);
-      res.status(500).json({ message: "An unexpected error occurred. Please try again." });
+        console.error("Error during login:", err);
+        res.status(500).json({ message: "An unexpected error occurred. Please try again." });
     }
-  };
- 
+};
 
-
+//updateBackground
 exports.updateBackground = async (req, res) => {
     try {
         let Email = req.body.email
@@ -105,8 +105,8 @@ exports.updateBackground = async (req, res) => {
         };
 
         await S3.putObject({
-            Bucket :"aper-files",
-            Key : req.file.filename,
+            Bucket: "aper-files",
+            Key: req.file.filename,
         }).promise()
         const updatedProfile = await usersDataAccess.updateUser(updateImage);
         if (updatedProfile) {
@@ -132,7 +132,7 @@ exports.updateBackground = async (req, res) => {
     }
 }
 
-
+//updateProfileDescription
 exports.updateProfileDescription = async (req, res) => {
     try {
         let Email = req.body.email;
@@ -167,9 +167,10 @@ exports.updateProfileDescription = async (req, res) => {
     }
 }
 
+//getUserDetails
 exports.getUserDetails = async (req, res) => {
     try {
-        let id = req.token_data._id ;
+        let id = req.token_data._id;
         const userData = await usersDataAccess.findUserById(id);
         if (userData) {
             res.json({
@@ -194,3 +195,89 @@ exports.getUserDetails = async (req, res) => {
     }
 }
 
+
+// delete Membership
+exports.deleteMembership = async (req, res) => {
+    try {
+        let id = req.token_data._id;
+        const userData = await usersDataAccess.findUserById(id);
+        const match = bcrypt.compareSync(req.body.password, userData.password);
+        if (match) {
+            const deleteUser = await usersDataAccess.deleteMembership(id)
+            if (deleteUser) {
+                res.status(200).json({
+                    message: "User Deleted",
+                    data: deleteUser
+                });
+            }
+            else {
+                res.status(400).json({
+                    message: "User Not Deleted",
+                });
+            }
+        }
+        else {
+            res.status(400).json({
+                message: "password not matched"
+            });
+        }
+
+
+    } catch (err) {
+        res.json({
+            message: "Something went wrong",
+            error: err.message,
+            status: res.statusCode
+        })
+
+    }
+}
+
+//updateUserDetails
+exports.updateUserDetails = async (req, res) => {
+    try {
+        const _id = req.token_data._id;
+
+        const data = {
+            penName: req.body.penName,
+            email: req.body.email,
+            password: req.body.password ? bcrypt.hashSync(req.body.password, 10) : undefined,
+        };
+
+        let updateData = {
+            _id,
+            toUpdate: {},
+        };
+
+        // Only include fields with values in the toUpdate object
+        if (data.penName) {
+            updateData.toUpdate.penName = data.penName;
+        }
+
+        if (data.email) {
+            updateData.toUpdate.email = data.email;
+        }
+
+        if (data.password) {
+            updateData.toUpdate.password = data.password;
+        }
+
+        const update = usersDataAccess.updateUserDetails(updateData);
+
+        if (update) {
+            res.status(200).json({
+                message: "User Updated"
+            });
+        } else {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+            res.status(400).json({                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+                message: "User Not Updated",
+            });
+        }
+    } catch (err) {
+        res.status(500).json({
+            message: "Something went wrong",
+            error: err.message,
+            status: res.statusCode,
+        });
+    }
+};

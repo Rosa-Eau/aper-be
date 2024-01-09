@@ -30,15 +30,30 @@ const getUserByEmail = async(email) =>{
     return user;
   };
   
+const updateUserDetails = async(userData)=>{
+  const user = await User.findOneAndUpdate(
+    {_id : userData._id},
+   { $set: userData.toUpdate },
+   { new: true }
+ );
+ return user;
+}
+
   const findUserById = async (id) =>{
     const user = await User.findById(id);
     return user;
   }
   
+  const deleteMembership = async(id)=>{
+    const user = await User.deleteOne({_id : id});
+    return user;
+  }
 module.exports = {
     storeUser,
     findUserByUsername,
     updateUser,
     findUserById,
-    getUserByEmail
+    getUserByEmail,
+    deleteMembership,
+    updateUserDetails
 };
