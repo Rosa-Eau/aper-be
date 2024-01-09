@@ -23,6 +23,10 @@ const storySchema = new mongoose.Schema({
     authorName :{
         type :String
     },
+    episodes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "episode",
+    }]
 
 })
 

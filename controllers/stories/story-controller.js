@@ -147,6 +147,7 @@ exports.addEpisode = async (req, res) => {
     try {
         const data = {
             authorId: req.body.authorId,
+            storyId : req.body.storyId,
             episodeTitle: req.body.episodeTitle,
             description: req.body.description
         }
@@ -174,8 +175,8 @@ exports.addEpisode = async (req, res) => {
 
 exports.getEpisode = async (req, res) => {
     try {
-        const authorId = req.params.authorId
-        const foundEpisode = await episodeDataAccess.getEpisodeById(authorId)
+        const StoryId = req.params.storyId
+        const foundEpisode = await episodeDataAccess.getEpisodeById(StoryId)
       
         if (foundEpisode && foundEpisode.length > 0) {
             res.status(200).json({
@@ -201,9 +202,9 @@ exports.getEpisode = async (req, res) => {
 
 exports.getEpisodeByIdAndAuthor = async(req,res)=>{
     try {
-        const authorId = req.params.authorId
+        const StoryId = req.params.storyId
         const id = req.params.episodeId
-        const foundEpisode = await episodeDataAccess.getEpisodeByIdAndAuthor(authorId,id)
+        const foundEpisode = await episodeDataAccess.getEpisodeByIdAndAuthor(StoryId,id)
       
         if (foundEpisode && foundEpisode.length > 0) {
             res.status(200).json({

@@ -1,9 +1,12 @@
 const mongoose = require("mongoose")
 
 const storySchema = new mongoose.Schema({
-    authorId : {
-        type : String,
-        ref : "storie"
+    authorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "storie",
+    },
+    storyId:{
+        type:String
     },
     episodeTitle :{
         type :String

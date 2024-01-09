@@ -22,7 +22,15 @@ const findStoryById = async (id) => {
         console.log(error)
     }
 }
+//findAllStories 
 
+const findAllStories = async () =>{
+    try{
+        const story = Story.find
+    }catch(error){
+        console.log(error)
+    }
+}
 const updateStory = async (storyData) => {
     try {
         const story = await Story.findOneAndUpdate(
