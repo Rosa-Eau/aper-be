@@ -1,5 +1,5 @@
 const Story = require("../../models/stories/story-model");
-
+const { ObjectId } = require('mongodb');
 //Store Story
 const storeStory = async (storyToStore) => {
     try {
@@ -34,7 +34,7 @@ const findAllStories = async () =>{
 const updateStory = async (storyData) => {
     try {
         const story = await Story.findOneAndUpdate(
-            { _id: storyData.storyId },
+            { _id: storyData.StoryId },
             { $set: storyData.toUpdate },
             { new: true }
         );

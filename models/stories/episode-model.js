@@ -6,7 +6,7 @@ const storySchema = new mongoose.Schema({
         ref: "storie",
     },
     storyId:{
-        type:String
+        type: mongoose.Schema.Types.ObjectId,
     },
     episodeTitle :{
         type :String

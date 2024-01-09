@@ -79,7 +79,6 @@ exports.updateStory = async (req, res) => {
     try {
         let StoryId = req.params.storyId
         let fieldsToUpdate = req.body
-
         // Validate fieldsToUpdate
         if (!fieldsToUpdate || Object.keys(fieldsToUpdate).length === 0) {
             return res.status(400).json({

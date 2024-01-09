@@ -41,7 +41,7 @@ const deleteEpisode = async (id) => {
   };
 
  const deleteEpisodeByAuthorId = async (id)=>{
-    const episode= await Episode.deleteOne({authorId : id});
+    const episode= await Episode.deleteOne({storyId : id});
     return episode;
  }
  
