@@ -34,7 +34,7 @@ const findAllStories = async () =>{
 const updateStory = async (storyData) => {
     try {
         const story = await Story.findOneAndUpdate(
-            { authorId: storyData.authorId },
+            { _id: storyData.storyId },
             { $set: storyData.toUpdate },
             { new: true }
         );
@@ -46,7 +46,7 @@ const updateStory = async (storyData) => {
 
 
 const deleteStory = async (id) => {
-    const story = await Story.deleteOne({authorId: id});
+    const story = await Story.deleteOne({_id: id});
     return story;
   };
 module.exports = { storeStory, findStoryById , updateStory , deleteStory }

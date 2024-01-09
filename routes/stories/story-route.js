@@ -5,14 +5,13 @@ const {addStory, getStory , updateStory , deleteStory, addEpisode,updateEpisode,
 
 router.post('/add-story',authenticateToken,addStory);
 router.get('/getStory/:authorId',authenticateToken,getStory);
-router.put('/updateStory/:authorId', authenticateToken,updateStory );
+router.put('/updateStory/:storyId', authenticateToken,updateStory );
 router.delete('/deleteStory', authenticateToken ,deleteStory);
 router.post('/add-episode', authenticateToken, addEpisode);
-router.put('/update-episode/:id',authenticateToken,updateEpisode);
+router.put('/update-episode/:episodeId',authenticateToken,updateEpisode);
 router.delete('/delete-episode',authenticateToken,deleteEpisode);
 router.get('/get-episode/:storyId',authenticateToken,getEpisode);
 router.get('/get-episodeById/:storyId/:episodeId',authenticateToken,getEpisodeByIdAndAuthor);
-
 
 
 module.exports = router

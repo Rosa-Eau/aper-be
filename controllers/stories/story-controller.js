@@ -77,7 +77,7 @@ exports.getStory = async (req, res) => {
 //update a story
 exports.updateStory = async (req, res) => {
     try {
-        let authorId = req.params.authorId
+        let StoryId = req.params.storyId
         let fieldsToUpdate = req.body
 
         // Validate fieldsToUpdate
@@ -89,7 +89,7 @@ exports.updateStory = async (req, res) => {
         }
 
         const UpdateStory = {
-            authorId,
+            StoryId,
             toUpdate: {
                 routineType: fieldsToUpdate.routineType,
                 coverTitle: fieldsToUpdate.coverTitle,
@@ -126,7 +126,7 @@ exports.updateStory = async (req, res) => {
 
 exports.deleteStory = async (req, res) => {
     try {
-        let id = req.body.authorId
+        let id = req.body.storyId
         const DeleteStory = await storyDataAccess.deleteStory(id);
         await episodeDataAccess.deleteEpisodeByAuthorId(id);        
         res.status(200).json({
@@ -232,7 +232,7 @@ exports.getEpisodeByIdAndAuthor = async(req,res)=>{
 
 exports.deleteEpisode = async (req, res) => {
     try {
-        let id = req.body.id
+        let id = req.body.episodeId
         const DeleteEpisode = await episodeDataAccess.deleteEpisode(id);
         res.status(200).json({
             message: "Episode deleted",
@@ -253,7 +253,7 @@ exports.deleteEpisode = async (req, res) => {
 
 exports.updateEpisode = async (req, res) => {
     try {
-        let id = req.params.id
+        let id = req.params.episodeId
         let fieldsToUpdate = req.body
 
         // Validate fieldsToUpdate
