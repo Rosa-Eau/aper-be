@@ -200,9 +200,6 @@ exports.getUserDetails = async (req, res) => {
 exports.deleteMembership = async (req, res) => {
     try {
         let id = req.token_data._id;
-        const userData = await usersDataAccess.findUserById(id);
-        const match = bcrypt.compareSync(req.body.password, userData.password);
-        if (match) {
             const deleteUser = await usersDataAccess.deleteMembership(id)
             if (deleteUser) {
                 res.status(200).json({
@@ -215,13 +212,6 @@ exports.deleteMembership = async (req, res) => {
                     message: "User Not Deleted",
                 });
             }
-        }
-        else {
-            res.status(400).json({
-                message: "password not matched"
-            });
-        }
-
 
     } catch (err) {
         res.json({
@@ -248,7 +238,6 @@ exports.updateUserDetails = async (req, res) => {
             _id,
             toUpdate: {},
         };
-
         // Only include fields with values in the toUpdate object
         if (data.penName) {
             updateData.toUpdate.penName = data.penName;
@@ -281,3 +270,28 @@ exports.updateUserDetails = async (req, res) => {
         });
     }
 };
+
+exports.verifyPassword = async(req,res)=>{
+    try {
+        let id = req.token_data._id;
+        const userData = await usersDataAccess.findUserById(id);
+   
+        const match = bcrypt.compareSync(req.body.password, userData.password);
+        if (match){
+            res.status(200).json({
+                message: "Password matched"
+            });
+        }
+        else {
+            res.json({
+                message: "Password not matched"
+            });
+        }
+    } catch (err) {
+        res.status(500).json({
+            message: "Something went wrong",
+            error: err.message,
+            status: res.statusCode,
+        });
+    }
+}
