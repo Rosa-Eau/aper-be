@@ -1,8 +1,8 @@
 const mongoose = require("mongoose")
-
+const moment = require("moment");
 const storySchema = new mongoose.Schema({
     authorId : {
-       type : String
+        type: mongoose.Schema.Types.ObjectId,
     },
     routineType : {
         type : String
@@ -17,8 +17,8 @@ const storySchema = new mongoose.Schema({
         type : String
     },
     dateOfPublication: {
-        type: Date, 
-        default: Date.now, 
+        type: String, 
+        default: moment().format("YYYY-MM-DD"),
     },
     authorName :{
         type :String
