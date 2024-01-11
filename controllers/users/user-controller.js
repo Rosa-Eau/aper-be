@@ -1,6 +1,6 @@
 require('dotenv').config();
 const bcrypt = require("bcrypt")
-const usersDataAccess = require("../../dal/users/user-dal")
+const usersDataAccess = require("../../Data-Access-Layer/users/user-dal")
 const { generateAccessToken } = require("../../middlewares/jsonWebToken")
 const AWS = require('aws-sdk');
 //S3 credentials
@@ -12,7 +12,7 @@ AWS.config.update({
 
 const S3 = new AWS.S3();
 
-//signupUser
+//signupUser : this function is to register a new user.
 exports.registerUser = async (req, res) => {
 
     try {
@@ -58,7 +58,7 @@ exports.registerUser = async (req, res) => {
     }
 }
 
-//loginUser
+//loginUser : this function is for logging-in if the email matches.
 exports.loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -92,7 +92,7 @@ exports.loginUser = async (req, res) => {
     }
 };
 
-//updateBackground
+//updateBackground : this function is to update the background image and saving the file in s3
 exports.updateBackground = async (req, res) => {
     try {
         let Email = req.body.email
@@ -132,7 +132,7 @@ exports.updateBackground = async (req, res) => {
     }
 }
 
-//updateProfileDescription
+//updateProfileDescription : this function is for updating the profile description.
 exports.updateProfileDescription = async (req, res) => {
     try {
         let Email = req.body.email;
@@ -167,7 +167,7 @@ exports.updateProfileDescription = async (req, res) => {
     }
 }
 
-//getUserDetails
+//getUserDetails: this function is for getting the logged-in user details.
 exports.getUserDetails = async (req, res) => {
     try {
         let id = req.token_data._id;
@@ -196,7 +196,7 @@ exports.getUserDetails = async (req, res) => {
 }
 
 
-// delete Membership
+// deleteMembership: this function will delete the logged-in user details.
 exports.deleteMembership = async (req, res) => {
     try {
         let id = req.token_data._id;
@@ -223,7 +223,7 @@ exports.deleteMembership = async (req, res) => {
     }
 }
 
-//updateUserDetails
+//updateUserDetails: this function will update the logged-in user details including penName, email and password.
 exports.updateUserDetails = async (req, res) => {
     try {
         const _id = req.token_data._id;
@@ -271,6 +271,7 @@ exports.updateUserDetails = async (req, res) => {
     }
 };
 
+//verifyPassword : This function will match the password(given in a body) with the logged-in user password.
 exports.verifyPassword = async(req,res)=>{
     try {
         let id = req.token_data._id;

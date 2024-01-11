@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {authenticateToken} = require("../../middlewares/jsonWebToken")
-const {addStory, getStory , updateStory , deleteStory, addEpisode,updateEpisode,deleteEpisode,getEpisode , getEpisodeByIdAndAuthor} = require("../../controllers/stories/story-controller")
+const {addStory, getStory , updateStory , deleteStory, addEpisode,updateEpisode,deleteEpisode,getEpisode , fetchStories, getEpisodeByIdAndStory} = require("../../controllers/stories/story-controller")
 
 router.post('/add-story',authenticateToken,addStory);
 router.get('/getStory/:authorId',authenticateToken,getStory);
@@ -11,7 +11,7 @@ router.post('/add-episode', authenticateToken, addEpisode);
 router.put('/update-episode/:episodeId',authenticateToken,updateEpisode);
 router.delete('/delete-episode',authenticateToken,deleteEpisode);
 router.get('/get-episode/:storyId',authenticateToken,getEpisode);
-router.get('/get-episodeById/:storyId/:episodeId',authenticateToken,getEpisodeByIdAndAuthor);
-
+router.get('/get-episodeById/:storyId/:episodeId',authenticateToken,getEpisodeByIdAndStory);
+router.get('/fetchStories',fetchStories);
 
 module.exports = router

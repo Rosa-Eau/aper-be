@@ -1,10 +1,10 @@
-const storyDataAccess = require("../../dal/stories/story-dal")
-const usersDataAccess = require("../../dal/users/user-dal")
-const episodeDataAccess = require("../../dal/episodes/episode-dal")
-// create a story
+const storyDataAccess = require("../../Data-Access-Layer/stories/story-dal")
+const usersDataAccess = require("../../Data-Access-Layer/users/user-dal")
+const episodeDataAccess = require("../../Data-Access-Layer/episodes/episode-dal")
+
+//addStory : this function is to create a story for logged-in user.
 exports.addStory = async (req, res) => {
     try {
-
         const userData = await usersDataAccess.findUserById(req.token_data._id)
         const data = {
             authorId: userData?._id,
@@ -47,7 +47,7 @@ exports.addStory = async (req, res) => {
     }
 };
 
-//get Story
+//getStory: this function is to get the story with the authorId.
 exports.getStory = async (req, res) => {
     try {
         const authorId = req.params.authorId
@@ -74,7 +74,7 @@ exports.getStory = async (req, res) => {
     }
 }
 
-//update a story
+//updateStory: this function is to update a story based on storyId that is given in parameter.
 exports.updateStory = async (req, res) => {
     try {
         let StoryId = req.params.storyId
@@ -123,6 +123,7 @@ exports.updateStory = async (req, res) => {
     }
 }
 
+//deleteStory: this function is to delete the story based on storyId that is given in the body.
 exports.deleteStory = async (req, res) => {
     try {
         let id = req.body.storyId
@@ -141,11 +142,12 @@ exports.deleteStory = async (req, res) => {
         });
     }
 }
-//add episode
+
+//add episode: this function is to create an episode for logged-in user.
 exports.addEpisode = async (req, res) => {
     try {
         const data = {
-            authorId: req.body.authorId,
+            authorId: req.token_data._id,
             storyId : req.body.storyId,
             episodeTitle: req.body.episodeTitle,
             description: req.body.description
@@ -170,8 +172,7 @@ exports.addEpisode = async (req, res) => {
 }
 
 
-// getEpisode
-
+// getEpisode: this function is for fetching the episode by storyId
 exports.getEpisode = async (req, res) => {
     try {
         const StoryId = req.params.storyId
@@ -199,11 +200,12 @@ exports.getEpisode = async (req, res) => {
     }
 }
 
-exports.getEpisodeByIdAndAuthor = async(req,res)=>{
+//getEpisdodeByIdAndAuthor: this function is to get the episode with episodeId and story
+exports.getEpisodeByIdAndStory = async(req,res)=>{
     try {
         const StoryId = req.params.storyId
         const id = req.params.episodeId
-        const foundEpisode = await episodeDataAccess.getEpisodeByIdAndAuthor(StoryId,id)
+        const foundEpisode = await episodeDataAccess.getEpisodeByIdAndStory(StoryId,id)
       
         if (foundEpisode && foundEpisode.length > 0) {
             res.status(200).json({
@@ -227,8 +229,7 @@ exports.getEpisodeByIdAndAuthor = async(req,res)=>{
     }
 }
 
-//deleteEpisode
-
+//deleteEpisode: this function is to delete the episode based on episodeId i.e, _id in (episode's collection) .
 exports.deleteEpisode = async (req, res) => {
     try {
         let id = req.body.episodeId
@@ -248,8 +249,7 @@ exports.deleteEpisode = async (req, res) => {
 
 }
 
-//updateEpisode
-
+//updateEpisode: this function is to update an episode based on episodeId i.e _id in episodes collection that is given in the parameter.
 exports.updateEpisode = async (req, res) => {
     try {
         let id = req.params.episodeId
@@ -294,3 +294,27 @@ exports.updateEpisode = async (req, res) => {
     }
 }
 
+//fetch story with episodes
+
+exports.fetchStories = async(req,res)=>{
+    try {
+        const findStory = await storyDataAccess.findAllStories()
+        if (findStory){
+            res.status(200).json({
+                message: "Data founded",
+                data: findStory
+            });
+        }
+        else {
+            res.json({
+                message: "Data not found"
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error.message,
+            status: 500
+        });
+    }
+}
