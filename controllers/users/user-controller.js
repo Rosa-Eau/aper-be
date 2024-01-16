@@ -1,6 +1,7 @@
 require('dotenv').config();
 const bcrypt = require("bcrypt")
 const usersDataAccess = require("../../Data-Access-Layer/users/user-dal")
+const imageDataAccess = require("../../Data-Access-Layer/users/image.dal")
 const { generateAccessToken } = require("../../middlewares/jsonWebToken")
 const AWS = require('aws-sdk');
 //S3 credentials
@@ -294,5 +295,61 @@ exports.verifyPassword = async(req,res)=>{
             error: err.message,
             status: res.statusCode,
         });
+    }
+}
+
+//saveImage: this api is to save the local imagepath to the database.
+exports.saveImage = async(req,res)=>{
+
+    try {
+        const data = {
+            imagePath : req.body.imagePath,
+            email : req.body.email
+        }
+
+        storedData = await imageDataAccess.storeImage(data)
+        if (storedData) {
+            res.status(200).json({
+                message: "Image Path Saved",
+                data: storedData
+            });
+
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error.message,
+            status: 500
+        });
+    }
+}
+
+
+//getImage: this api is to get the image path from the database.
+exports.getImage = async(req,res)=>{
+    try {
+        const Email = req.params.email;
+        const imageData = await imageDataAccess.getImage(Email);
+        if (imageData) {
+            res.json({
+                message: "Image found successfully",
+                data: imageData,
+                status: res.statusCode
+            })
+        }
+        else {
+            res.json({
+                message: "Image not found",
+                status: 404
+            })
+        }
+
+    } catch (err) {
+        res.json({
+            message: "Something went wrong",
+            error: err.message,
+            status: res.statusCode
+        })
     }
 }

@@ -147,33 +147,33 @@ exports.deleteStory = async (req, res) => {
 
 //add episode: this function is to create an episode for logged-in user.
 exports.addEpisode = async (req, res) => {
-    try {
-        const data = {
-            authorId: req.token_data._id,
-            storyId : req.body.storyId,
-            episodeTitle: req.body.episodeTitle,
-            description: req.body.description,
-            routineType: req.body.routineType,
-            genre: req.body.genre,
-            coverTitle : req.body.coverTitle
-        }
+        try {
+            const data = {
+                authorId: req.token_data._id,
+                storyId : req.body.storyId,
+                episodeTitle: req.body.episodeTitle,
+                description: req.body.description,
+                routineType: req.body.routineType,
+                genre: req.body.genre,
+                coverTitle : req.body.coverTitle
+            }
 
-        storedData = await episodeDataAccess.saveEpisode(data)
-        if (storedData) {
-            res.status(200).json({
-                message: "Episode Saved",
-                data: storedData
+            storedData = await episodeDataAccess.saveEpisode(data)
+            if (storedData) {
+                res.status(200).json({
+                    message: "Episode Saved",
+                    data: storedData
+                });
+
+            }
+
+        } catch (error) {
+            res.status(500).json({
+                message: "Internal Server Error",
+                error: error.message,
+                status: 500
             });
-
         }
-
-    } catch (error) {
-        res.status(500).json({
-            message: "Internal Server Error",
-            error: error.message,
-            status: 500
-        });
-    }
 }
 
 
