@@ -35,6 +35,17 @@ const getEpisodeById =  async(Id) =>{
     }
 }
 
+const getEpisodeByAuthorId =  async(Id) =>{
+    try {
+        const foundEpisode = await Episode.find({authorId : Id  });
+        return foundEpisode;
+        
+    } catch (error) {
+        console.log(err)
+        
+    }
+}
+
 const deleteEpisode = async (id) => {
     const episode= await Episode.deleteOne({_id : id});
     return episode;
@@ -57,4 +68,4 @@ const updateEpisodeById = async (storyData) => {
         console.log(error)
     }
 }
-module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById , deleteEpisodeByAuthorId , getEpisodeByIdAndStory}
+module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById , deleteEpisodeByAuthorId , getEpisodeByIdAndStory,getEpisodeByAuthorId}
