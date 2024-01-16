@@ -50,29 +50,31 @@ exports.addStory = async (req, res) => {
 //getStory: this function is to get the story with the authorId.
 exports.getStory = async (req, res) => {
     try {
-        const authorId = req.params.authorId
-        let Story = await storyDataAccess.findStoryById(authorId);
-        if (Story.length > 0) {
+        const authorId = req.params.authorId;
+        let stories = await storyDataAccess.findStoryById(authorId);
+
+        if (stories.length > 0) {
+            // Sort the stories by creation date in descending order
+            stories.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
             res.status(200).json({
-                message: "Story Found",
-                data: Story
+                message: "Stories Found",
+                data: stories,
+            });
+        } else {
+            res.status(404).json({
+                message: "No Stories Available",
             });
         }
-        else {
-            res.status(404).json({
-                message: "No Stories Available"
-            })
-        }
-    }
-    catch (err) {
-        res.json({
-            message: "Something went wrong",
+    } catch (err) {
+        res.status(500).json({
+            message: "Internal Server Error",
             error: err.message,
-            status: res.statusCode
-        })
-
+            status: 500,
+        });
     }
-}
+};
+
 
 //updateStory: this function is to update a story based on storyId that is given in parameter.
 exports.updateStory = async (req, res) => {
@@ -319,30 +321,32 @@ exports.fetchStories = async(req,res)=>{
     }
 }
 
-//getEpiodeByAuthor
-exports.getEpisodeByAuthor = async(req,res)=>{
+//getEpiodeByAuthor: this function is to fetch the episode based on the logged-in user
+exports.getEpisodeByAuthor = async(req, res) => {
     try {
         const AuthorId = req.params.authorId;
-        const foundEpisode = await episodeDataAccess.getEpisodeByAuthorId(AuthorId)
-      
+        const foundEpisode = await episodeDataAccess.getEpisodeByAuthorId(AuthorId);
+
         if (foundEpisode && foundEpisode.length > 0) {
+            // Sort the episodes by creation date in descending order
+            foundEpisode.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
             res.status(200).json({
-                message: "Episode Found",
+                message: "Episodes Found",
                 data: foundEpisode
             });
         } else {
             res.status(404).json({
-                message: "No Episode Found",
+                message: "No Episodes Found",
                 status: 404
             });
         }
-    
+
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error",
             error: error.message,
             status: 500
         });
-
     }
 }

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const moment = require("moment");
+const { Timestamp } = require("mongodb");
 const storySchema = new mongoose.Schema({
     authorId : {
         type: mongoose.Schema.Types.ObjectId,
@@ -26,8 +27,14 @@ const storySchema = new mongoose.Schema({
     episodes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "episode",
-    }]
+    }],
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
 
+}, {
+    timestamps : true
 })
 
 module.exports = mongoose.model('storie',storySchema)
