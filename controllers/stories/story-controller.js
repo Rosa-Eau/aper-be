@@ -55,11 +55,11 @@ exports.getStory = async (req, res) => {
 
         if (stories.length > 0) {
             // Sort the stories by creation date in descending order
-            stories.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            descendingOrderStories = stories.reverse()
 
             res.status(200).json({
                 message: "Stories Found",
-                data: stories,
+                data: descendingOrderStories,
             });
         } else {
             res.status(404).json({
@@ -152,7 +152,10 @@ exports.addEpisode = async (req, res) => {
             authorId: req.token_data._id,
             storyId : req.body.storyId,
             episodeTitle: req.body.episodeTitle,
-            description: req.body.description
+            description: req.body.description,
+            routineType: req.body.routineType,
+            genre: req.body.genre,
+            coverTitle : req.body.coverTitle
         }
 
         storedData = await episodeDataAccess.saveEpisode(data)
@@ -326,14 +329,11 @@ exports.getEpisodeByAuthor = async(req, res) => {
     try {
         const AuthorId = req.params.authorId;
         const foundEpisode = await episodeDataAccess.getEpisodeByAuthorId(AuthorId);
-
+        const descendingOrderEpisodes = foundEpisode.reverse();
         if (foundEpisode && foundEpisode.length > 0) {
-            // Sort the episodes by creation date in descending order
-            foundEpisode.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
             res.status(200).json({
                 message: "Episodes Found",
-                data: foundEpisode
+                data: descendingOrderEpisodes
             });
         } else {
             res.status(404).json({
