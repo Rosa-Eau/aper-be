@@ -306,9 +306,24 @@ exports.saveImage = async(req,res)=>{
             imagePath : req.body.imagePath,
             email : req.body.email
         }
+        let Email = data?.email
+        let backgroundImage= data?.imagePath
+        const updateImage = {
+            Email,
+            toUpdate: {
+                backgroundImage,
+            },
+        };
+
+        // await S3.putObject({
+        //     Bucket: "aper-files",
+        //     Key: data.imagePath,
+        // }).promise()
+
 
         storedData = await imageDataAccess.storeImage(data)
         if (storedData) {
+             await usersDataAccess.updateUser(updateImage);
             res.status(200).json({
                 message: "Image Path Saved",
                 data: storedData

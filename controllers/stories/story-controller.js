@@ -304,36 +304,39 @@ exports.updateEpisode = async (req, res) => {
 exports.fetchStories = async (req, res) => {
     try {
         const { authorId, genre, routineType, coverTitle, dateOfPublication, penName } = req.query;
-        
         const filter = {};
         if (authorId) filter.authorId = authorId;
         if (genre) filter.genre = genre;
         if (routineType) filter.routineType = routineType;
         if (coverTitle) filter.coverTitle = coverTitle;
         if (dateOfPublication) filter.dateOfPublication = dateOfPublication;
-
-          // Find user by penName
-          if (penName) {
+        // Find user by penName
+        if (penName) {
             const userData = await usersDataAccess.findUserByPenName(penName);
-            console.log("userData is ===", userData)
             if (userData) {
                 filter.authorId = userData._id;
             } else {
-                // If no user found with the given penName, return an empty result
                 return res.status(404).json({
                     message: "No Matching User Found",
                 });
             }
         }
+
         // Find stories that match the filter
         const filteredStories = await storyDataAccess.findStoriesByFilter(filter);
 
         if (filteredStories && filteredStories.length > 0) {
-            // Fetch episodes for each filtered story
+            // Fetch episodes for each filtered story and include background image
             const storiesWithEpisodes = await Promise.all(
                 filteredStories.map(async (story) => {
                     const episodes = await episodeDataAccess.getEpisodeById(story._id);
-                    return { ...story.toObject(), episodes };
+                    const authorData = await usersDataAccess.findUserById(story.authorId);
+
+                    return {
+                        ...story.toObject(),
+                        backgroundImage: authorData?.backgroundImage,
+                        episodes
+                    };
                 })
             );
 
