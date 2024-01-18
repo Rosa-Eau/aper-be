@@ -68,4 +68,14 @@ const updateEpisodeById = async (storyData) => {
         console.log(error)
     }
 }
-module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById , deleteEpisodeByAuthorId , getEpisodeByIdAndStory,getEpisodeByAuthorId}
+
+const findEpisodesByFilter = async (filter) => {
+    try {
+        const episodes = await Episode.find(filter);
+        return episodes;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
+module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById , deleteEpisodeByAuthorId , getEpisodeByIdAndStory,getEpisodeByAuthorId, findEpisodesByFilter}

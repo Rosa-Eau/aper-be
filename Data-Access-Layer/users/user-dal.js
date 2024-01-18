@@ -48,6 +48,11 @@ const updateUserDetails = async(userData)=>{
     const user = await User.deleteOne({_id : id});
     return user;
   }
+
+  const findUserByPenName = async (penName) => {
+    const user = await User.findOne({ penName });
+    return user;
+};
 module.exports = {
     storeUser,
     findUserByUsername,
@@ -55,5 +60,6 @@ module.exports = {
     findUserById,
     getUserByEmail,
     deleteMembership,
-    updateUserDetails
+    updateUserDetails,
+    findUserByPenName
 };

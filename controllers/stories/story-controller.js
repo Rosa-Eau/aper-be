@@ -301,28 +301,60 @@ exports.updateEpisode = async (req, res) => {
 
 //fetch story with episodes
 
-exports.fetchStories = async(req,res)=>{
+exports.fetchStories = async (req, res) => {
     try {
-        const findStory = await storyDataAccess.findAllStories()
-        if (findStory){
-            res.status(200).json({
-                message: "Data founded",
-                data: findStory
-            });
+        const { authorId, genre, routineType, coverTitle, dateOfPublication, penName } = req.query;
+        
+        const filter = {};
+        if (authorId) filter.authorId = authorId;
+        if (genre) filter.genre = genre;
+        if (routineType) filter.routineType = routineType;
+        if (coverTitle) filter.coverTitle = coverTitle;
+        if (dateOfPublication) filter.dateOfPublication = dateOfPublication;
+
+          // Find user by penName
+          if (penName) {
+            const userData = await usersDataAccess.findUserByPenName(penName);
+            console.log("userData is ===", userData)
+            if (userData) {
+                filter.authorId = userData._id;
+            } else {
+                // If no user found with the given penName, return an empty result
+                return res.status(404).json({
+                    message: "No Matching User Found",
+                });
+            }
         }
-        else {
-            res.json({
-                message: "Data not found"
+        // Find stories that match the filter
+        const filteredStories = await storyDataAccess.findStoriesByFilter(filter);
+
+        if (filteredStories && filteredStories.length > 0) {
+            // Fetch episodes for each filtered story
+            const storiesWithEpisodes = await Promise.all(
+                filteredStories.map(async (story) => {
+                    const episodes = await episodeDataAccess.getEpisodeById(story._id);
+                    return { ...story.toObject(), episodes };
+                })
+            );
+
+            res.status(200).json({
+                message: "Filtered Stories Found",
+                data: storiesWithEpisodes,
+            });
+        } else {
+            res.status(404).json({
+                message: "No Matching Stories Found",
             });
         }
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error",
             error: error.message,
-            status: 500
+            status: 500,
         });
     }
-}
+};
+
 
 //getEpiodeByAuthor: this function is to fetch the episode based on the logged-in user
 exports.getEpisodeByAuthor = async(req, res) => {

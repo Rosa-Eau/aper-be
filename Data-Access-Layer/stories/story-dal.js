@@ -26,7 +26,7 @@ const findStoryById = async (id) => {
 
 const findAllStories = async () =>{
     try{
-        const story = Story.find().populate('episodes')
+        const story = Story.find();
         return story
     }catch(error){
         console.log(error)
@@ -49,8 +49,19 @@ const findStoryWithEpisode = async (id) =>{
     const story = await Story.find().populate('episodes')
     return story;
 }
+
 const deleteStory = async (id) => {
     const story = await Story.deleteOne({_id: id});
     return story;
   };
-module.exports = { storeStory, findStoryById , updateStory , deleteStory , findStoryWithEpisode, findAllStories}
+
+  const findStoriesByFilter = async (filter) => {
+    try {
+        const stories = await Story.find(filter);
+        return stories;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
+module.exports = { storeStory, findStoryById , updateStory , deleteStory , findStoryWithEpisode, findAllStories ,findStoriesByFilter}
