@@ -13,5 +13,5 @@ router.delete('/delete-episode',authenticateToken,deleteEpisode);
 router.get('/get-episode/:storyId',authenticateToken,getEpisode);
 router.get('/get-episodeByAuthor/:authorId',authenticateToken,getEpisodeByAuthor);
 router.get('/get-episodeById/:storyId/:episodeId',authenticateToken,getEpisodeByIdAndStory);
-router.get('/fetchStories',fetchStories);
+router.get('/fetchStories',authenticateToken,fetchStories);
 module.exports = router
