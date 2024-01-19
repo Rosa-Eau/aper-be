@@ -434,22 +434,40 @@ exports.getEpisodeByAuthor = async(req, res) => {
     }
 }
 
-exports.searchStories = async (req,res)=>{
+exports.searchStories = async (req, res) => {
     try {
         const key = req.params.key || "";
-        let result = await storyDataAccess.searchStory(key)
-        if (result){
-            res.status(200).json({
-                message : "Data found",
-                data : result
-            })
-        }
+        let result = await storyDataAccess.searchStory(key);
 
+        if (result && result.length > 0) {
+            // Fetch episodes and backgroundImage for each story in the result
+            const storiesWithEpisodes = await Promise.all(
+                result.map(async (story) => {
+                    const episodes = await episodeDataAccess.getEpisodeById(story._id);
+                    const authorData = await usersDataAccess.findUserById(story.authorId);
+
+                    return {
+                        ...story.toObject(),
+                        backgroundImage: authorData?.backgroundImage,
+                        episodes
+                    };
+                })
+            );
+
+            res.status(200).json({
+                message: "Data found",
+                data: storiesWithEpisodes,
+            });
+        } else {
+            res.status(404).json({
+                message: "No Matching Stories Found",
+            });
+        }
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error",
             error: error.message,
-            status: 500
+            status: 500,
         });
     }
-}
+};
