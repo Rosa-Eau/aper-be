@@ -54,16 +54,64 @@ exports.getStory = async (req, res) => {
         let stories = await storyDataAccess.findStoryById(authorId);
 
         if (stories.length > 0) {
-            // Sort the stories by creation date in descending order
-            descendingOrderStories = stories.reverse()
+            descendingOrderStories = stories.reverse();
+
+            // Fetch episodes for each story and include backgroundImage
+            const storiesWithEpisodes = await Promise.all(
+                descendingOrderStories.map(async (story) => {
+                    const episodes = await episodeDataAccess.getEpisodeById(story._id);
+                    const authorData = await usersDataAccess.findUserById(story.authorId);
+
+                    return {
+                        ...story.toObject(),
+                        backgroundImage: authorData?.backgroundImage,
+                        episodes
+                    };
+                })
+            );
 
             res.status(200).json({
                 message: "Stories Found",
-                data: descendingOrderStories,
+                data: storiesWithEpisodes,
             });
         } else {
             res.status(404).json({
                 message: "No Stories Available",
+            });
+        }
+    } catch (err) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: err.message,
+            status: 500,
+        });
+    }
+};
+
+//getStoryByStoryId : this function is to fetch the story based on storyId
+
+exports.getStoryByStoryId = async (req, res) => {
+    try {
+        const StoryId = req.params.storyId;
+        const story = await storyDataAccess.findStoryByStoryId(StoryId);
+
+        if (story) {
+            const episodes = await episodeDataAccess.getEpisodeById(story._id);
+            const authorData = await usersDataAccess.findUserById(story.authorId);
+
+            const storyWithEpisodes = {
+                ...story.toObject(),
+                backgroundImage: authorData?.backgroundImage,
+                episodes
+            };
+
+            res.status(200).json({
+                message: "Story Found",
+                data: storyWithEpisodes,
+            });
+        } else {
+            res.status(404).json({
+                message: "No Story Available",
             });
         }
     } catch (err) {
@@ -375,6 +423,26 @@ exports.getEpisodeByAuthor = async(req, res) => {
                 message: "No Episodes Found",
                 status: 404
             });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error.message,
+            status: 500
+        });
+    }
+}
+
+exports.searchStories = async (req,res)=>{
+    try {
+        const key = req.params.key || "";
+        let result = await storyDataAccess.searchStory(key)
+        if (result){
+            res.status(200).json({
+                message : "Data found",
+                data : result
+            })
         }
 
     } catch (error) {

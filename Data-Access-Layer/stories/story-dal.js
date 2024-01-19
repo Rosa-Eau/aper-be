@@ -1,5 +1,4 @@
 const Story = require("../../models/stories/story-model");
-const { ObjectId } = require('mongodb');
 //Store Story
 const storeStory = async (storyToStore) => {
     try {
@@ -12,7 +11,7 @@ const storeStory = async (storyToStore) => {
     }
 };
 
-//find Story By Id
+//find Story By author id
 const findStoryById = async (id) => {
     try {
         const story = await Story.find({ authorId: id });
@@ -22,6 +21,17 @@ const findStoryById = async (id) => {
         console.log(error)
     }
 }
+//find Story By story id
+const findStoryByStoryId = async (id) => {
+    try {
+        const story = await Story.findOne({_id :id});
+        return story
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 //findAllStories 
 
 const findAllStories = async () =>{
@@ -64,4 +74,23 @@ const deleteStory = async (id) => {
         throw error;
     }
 };
-module.exports = { storeStory, findStoryById , updateStory , deleteStory , findStoryWithEpisode, findAllStories ,findStoriesByFilter}
+//searchStory : this function is to search the story based on any fieled based on stories
+const searchStory = async (key) => {
+    try {
+        const data = await Story.find({
+            $or: [
+                { genre: { $regex: new RegExp(key, 'i') } },
+                { authorName: { $regex: new RegExp(key, 'i') } },
+                { routineType: { $regex: new RegExp(key, 'i') } },
+                { coverTitle: { $regex: new RegExp(key, 'i') } },
+                { dateOfPublication: { $regex: new RegExp(key, 'i') } },
+            ],
+        });
+        return data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+
+module.exports = { storeStory, findStoryById , updateStory , deleteStory , findStoryWithEpisode, findAllStories ,findStoriesByFilter , searchStory,findStoryByStoryId}
