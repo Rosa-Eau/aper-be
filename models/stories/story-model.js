@@ -32,6 +32,10 @@ const storySchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    isPublished : {
+        type: Boolean,
+        default : false
+    }
 
 }, {
     timestamps : true

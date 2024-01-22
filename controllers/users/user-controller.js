@@ -15,10 +15,9 @@ const S3 = new AWS.S3();
 
 //signupUser : this function is to register a new user.
 exports.registerUser = async (req, res) => {
-
     try {
         const { penName, email, password } = req.body;
-        if (!penName, !password || !email) {
+        if (!penName || !password || !email) {
             res.status(400).json({
                 message: 'Invalid request. Please provide penName, email, and password.',
                 status: res.statusCode
@@ -42,12 +41,13 @@ exports.registerUser = async (req, res) => {
 
         const storedUser = await usersDataAccess.storeUser(data);
         if (storedUser) {
+            const token = generateAccessToken({ _id: storedUser._id });
             res.json({
                 message: "User has been registered successfully",
                 data: storedUser,
+                auth: token,
                 status: res.statusCode
-            })
-
+            });
         }
 
     } catch (err) {
@@ -55,7 +55,7 @@ exports.registerUser = async (req, res) => {
             message: "Something went wrong",
             error: err.message,
             status: res.statusCode
-        })
+        });
     }
 }
 

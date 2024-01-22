@@ -145,7 +145,8 @@ exports.updateStory = async (req, res) => {
                 genre: fieldsToUpdate.genre,
                 lineStyle: fieldsToUpdate.lineStyle,
                 dateOfPublication: fieldsToUpdate.dateOfPublication,
-                authorName: fieldsToUpdate.authorName
+                authorName: fieldsToUpdate.authorName,
+                isPublished:fieldsToUpdate.isPublished
             },
         };
 
