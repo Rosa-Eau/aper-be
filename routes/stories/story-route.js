@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const {authenticateToken} = require("../../middlewares/jsonWebToken")
-const {addStory, getStory , updateStory , deleteStory, addEpisode,updateEpisode,deleteEpisode,getEpisodeByAuthor,getEpisode , fetchStories, getEpisodeByIdAndStory ,  searchStories,getStoryByStoryId} = require("../../controllers/stories/story-controller")
+const {addStory, getStory , updateStory , deleteStory, addEpisode,updateEpisode,deleteEpisode,getEpisodeByAuthor,getEpisode , fetchStories, getEpisodeByIdAndStory ,  searchStories,getStoryByStoryId, findRecentAuthorStories} = require("../../controllers/stories/story-controller")
 
 router.post('/add-story',authenticateToken,addStory);
 router.get('/getStory/:authorId',authenticateToken,getStory);
 router.get('/getStoryByStoryId/:storyId',authenticateToken, getStoryByStoryId );
+router.get('/getRecentAuthorStories',authenticateToken,findRecentAuthorStories);
 router.put('/updateStory/:storyId', authenticateToken,updateStory );
 router.delete('/deleteStory', authenticateToken ,deleteStory);
 router.post('/add-episode', authenticateToken, addEpisode);

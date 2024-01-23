@@ -50,7 +50,7 @@ exports.addStory = async (req, res) => {
 //getStory: this function is to get the story with the authorId.
 exports.getStory = async (req, res) => {
     try {
-        const authorId = req.params.authorId;
+        const authorId = req.params.authorId; 
         let stories = await storyDataAccess.findStoryById(authorId);
 
         if (stories.length > 0) {
@@ -464,6 +464,50 @@ exports.searchStories = async (req, res) => {
                 message: "No Matching Stories Found",
             });
         }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error.message,
+            status: 500,
+        });
+    }
+};
+
+//findRecentAuthorStories: this function is to fetch the recent authors stories
+exports.findRecentAuthorStories = async (req, res) => {
+    try {
+        const authors = await usersDataAccess.findUser();
+        const recentAuthors = authors.reverse();
+
+        const storiesWithEpisodes = await Promise.all(
+            recentAuthors.map(async (author) => {
+                const authorId = author._id;
+                const stories = await storyDataAccess.findStoryById(authorId);
+
+                const storiesWithEpisodes = await Promise.all(
+                    stories.map(async (story) => {
+                        const episodes = await episodeDataAccess.getEpisodeById(story._id);
+                        const authorData = await usersDataAccess.findUserById(story.authorId);
+
+                        return {
+                            ...story.toObject(),
+                            backgroundImage: authorData?.backgroundImage,
+                            episodes
+                        };
+                    })
+                );
+
+                return {
+                    authorId,
+                    stories: storiesWithEpisodes
+                };
+            })
+        );
+
+        res.status(200).json({
+            message: "Recent Authors and Their Stories Found",
+            data: storiesWithEpisodes,
+        });
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error",

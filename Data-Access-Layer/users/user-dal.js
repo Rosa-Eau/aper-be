@@ -53,6 +53,11 @@ const updateUserDetails = async(userData)=>{
     const user = await User.findOne({ penName });
     return user;
 };
+
+ const findUser = async()=>{
+  const user = await User.find();
+  return user;
+ }
 module.exports = {
     storeUser,
     findUserByUsername,
@@ -61,5 +66,6 @@ module.exports = {
     getUserByEmail,
     deleteMembership,
     updateUserDetails,
-    findUserByPenName
+    findUserByPenName,
+    findUser
 };
