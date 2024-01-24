@@ -450,6 +450,7 @@ exports.searchStories = async (req, res) => {
                     return {
                         ...story.toObject(),
                         backgroundImage: authorData?.backgroundImage,
+                        description: authorData?.description,
                         episodes
                     };
                 })
@@ -492,6 +493,7 @@ exports.findRecentAuthorStories = async (req, res) => {
                         return {
                             ...story.toObject(),
                             backgroundImage: authorData?.backgroundImage,
+                            description : authorData?.description,
                             episodes
                         };
                     })
