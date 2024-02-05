@@ -102,7 +102,8 @@ exports.getStoryByStoryId = async (req, res) => {
             const storyWithEpisodes = {
                 ...story.toObject(),
                 backgroundImage: authorData?.backgroundImage,
-                episodes
+                episodes,
+                email: authorData?.email
             };
 
             res.status(200).json({
@@ -321,7 +322,8 @@ exports.updateEpisode = async (req, res) => {
             id,
             toUpdate: {
                 episodeTitle: fieldsToUpdate.episodeTitle,
-                description: fieldsToUpdate.description
+                description: fieldsToUpdate.description,
+                isPublished: fieldsToUpdate.isPublished
             },
         };
 
