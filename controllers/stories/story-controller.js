@@ -65,7 +65,8 @@ exports.getStory = async (req, res) => {
                     return {
                         ...story.toObject(),
                         backgroundImage: authorData?.backgroundImage,
-                        episodes
+                        episodes,
+                        description : authorData?.description
                     };
                 })
             );
@@ -103,7 +104,8 @@ exports.getStoryByStoryId = async (req, res) => {
                 ...story.toObject(),
                 backgroundImage: authorData?.backgroundImage,
                 episodes,
-                email: authorData?.email
+                email: authorData?.email,
+                description : authorData?.description
             };
 
             res.status(200).json({
