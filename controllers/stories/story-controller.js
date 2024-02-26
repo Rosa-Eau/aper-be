@@ -182,11 +182,13 @@ exports.deleteStory = async (req, res) => {
     try {
         let id = req.body.storyId
         const DeleteStory = await storyDataAccess.deleteStory(id);
-        await episodeDataAccess.deleteEpisodeByAuthorId(id);        
-        res.status(200).json({
-            message: "Story deleted",
-            data: DeleteStory
-        });
+        if (DeleteStory){
+            await episodeDataAccess.deleteEpisodeByStoryId(id);    
+            res.status(200).json({
+                message: "Story deleted",
+                data: DeleteStory
+            });
+        }    
 
     } catch (error) {
         res.status(500).json({

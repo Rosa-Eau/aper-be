@@ -51,9 +51,19 @@ const deleteEpisode = async (id) => {
     return episode;
   };
 
- const deleteEpisodeByAuthorId = async (id)=>{
-    const episode= await Episode.deleteOne({storyId : id});
-    return episode;
+ const deleteEpisodeByStoryId = async (id)=>{
+    try {
+        
+        const episode= await Episode.deleteMany({storyId : id});
+        if (episode){
+            console.log("deleted the episdoe====>", episode)
+    
+            return episode;
+        }
+    } catch (error) {
+        return error.message
+    }
+  
  }
  
 const updateEpisodeById = async (storyData) => {
@@ -78,4 +88,4 @@ const findEpisodesByFilter = async (filter) => {
         throw error;
     }
 };
-module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById , deleteEpisodeByAuthorId , getEpisodeByIdAndStory,getEpisodeByAuthorId, findEpisodesByFilter}
+module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById , deleteEpisodeByStoryId , getEpisodeByIdAndStory,getEpisodeByAuthorId, findEpisodesByFilter}
