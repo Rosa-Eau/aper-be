@@ -265,11 +265,21 @@ exports.getEpisodeByIdAndStory = async(req,res)=>{
         const StoryId = req.params.storyId
         const id = req.params.episodeId
         const foundEpisode = await episodeDataAccess.getEpisodeByIdAndStory(StoryId,id)
-      
         if (foundEpisode && foundEpisode.length > 0) {
+            
+            descendingOrderStories = foundEpisode.reverse();
+            const Episodes = await Promise.all(
+                descendingOrderStories.map(async (episode) => {
+                    const authorData = await usersDataAccess.findUserById(episode.authorId);
+                    return {
+                        ...episode.toObject(),
+                        authorDetails: authorData
+                    };
+                })
+            ) 
             res.status(200).json({
                 message: "Episode Found",
-                data: foundEpisode
+                data: Episodes,
             });
         } else {
             res.status(404).json({
