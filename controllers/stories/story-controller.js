@@ -400,7 +400,8 @@ exports.fetchStories = async (req, res) => {
                     return {
                         ...story.toObject(),
                         backgroundImage: authorData?.backgroundImage,
-                        episodes
+                        episodes,
+                        authorDetails : authorData
                     };
                 })
             );
