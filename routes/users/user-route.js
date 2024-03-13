@@ -8,7 +8,7 @@ router.post('/sign-up',registerUser);
 router.post('/log-in', loginUser);
 router.put('/update-Background', upload.single("file"),updateBackground);
 router.put('/update-Profle-Description',updateProfileDescription);
-router.get('/getUserDetails',authenticateToken,getUserDetails);
+router.get('/getUserDetails',getUserDetails);
 router.delete('/deleteMembership',authenticateToken,deleteMembership);
 router.put('/updateUserDetails',authenticateToken,updateUserDetails);
 router.post('/verifyPassword',authenticateToken,verifyPassword);

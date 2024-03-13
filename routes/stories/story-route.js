@@ -5,8 +5,8 @@ const {addStory, getStory , updateStory , deleteStory, addEpisode,updateEpisode,
 
 router.post('/add-story',authenticateToken,addStory);
 router.get('/getStory/:authorId',authenticateToken,getStory);
-router.get('/getStoryByStoryId/:storyId',authenticateToken, getStoryByStoryId );
-router.get('/getRecentAuthorStories',authenticateToken,findRecentAuthorStories);
+router.get('/getStoryByStoryId/:storyId', getStoryByStoryId );
+router.get('/getRecentAuthorStories',findRecentAuthorStories);
 router.put('/updateStory/:storyId', authenticateToken,updateStory );
 router.delete('/deleteStory', authenticateToken ,deleteStory);
 router.post('/add-episode', authenticateToken, addEpisode);
@@ -15,6 +15,6 @@ router.delete('/delete-episode',authenticateToken,deleteEpisode);
 router.get('/get-episode/:storyId',authenticateToken,getEpisode);
 router.get('/get-episodeByAuthor/:authorId',authenticateToken,getEpisodeByAuthor);
 router.get('/get-episodeById/:storyId/:episodeId',authenticateToken,getEpisodeByIdAndStory);
-router.get('/fetchStories',authenticateToken,fetchStories);
+router.get('/fetchStories',fetchStories);
 router.get('/search/:key?',authenticateToken ,searchStories);
 module.exports = router
