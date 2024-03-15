@@ -36,6 +36,10 @@ const storySchema = new mongoose.Schema({
     isPublished: {
         type:Boolean,
         default: false
+    },
+    characterLimitStatus : {
+        type:Boolean,
+        default: false
     }
 },
 {

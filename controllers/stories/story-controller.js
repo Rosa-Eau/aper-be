@@ -23,10 +23,10 @@ exports.addStory = async (req, res) => {
             const userToUpdate = {
                 Email,
                 toUpdate: {
-                    authorId : storedStory?.authorId
+                    authorId: storedStory?.authorId
                 },
             };
-    
+
             await usersDataAccess.updateUser(userToUpdate)
 
             res.json({
@@ -50,7 +50,7 @@ exports.addStory = async (req, res) => {
 //getStory: this function is to get the story with the authorId.
 exports.getStory = async (req, res) => {
     try {
-        const authorId = req.params.authorId; 
+        const authorId = req.params.authorId;
         let stories = await storyDataAccess.findStoryById(authorId);
 
         if (stories.length > 0) {
@@ -66,8 +66,8 @@ exports.getStory = async (req, res) => {
                         ...story.toObject(),
                         backgroundImage: authorData?.backgroundImage,
                         episodes,
-                        description : authorData?.description,
-                        authorDetails : authorData
+                        description: authorData?.description,
+                        authorDetails: authorData
                     };
                 })
             );
@@ -106,7 +106,7 @@ exports.getStoryByStoryId = async (req, res) => {
                 backgroundImage: authorData?.backgroundImage,
                 episodes,
                 email: authorData?.email,
-                description : authorData?.description
+                description: authorData?.description
             };
 
             res.status(200).json({
@@ -150,11 +150,77 @@ exports.updateStory = async (req, res) => {
                 lineStyle: fieldsToUpdate.lineStyle,
                 dateOfPublication: fieldsToUpdate.dateOfPublication,
                 authorName: fieldsToUpdate.authorName,
-                isPublished:fieldsToUpdate.isPublished
+                isPublished: fieldsToUpdate.isPublished
             },
         };
 
         const update = await storyDataAccess.updateStory(UpdateStory);
+
+        if (update.isPublished === false) {
+            const foundEpisode = await episodeDataAccess.getEpisodeById(StoryId);
+            if (foundEpisode && foundEpisode.length > 0) {
+
+                const storiesWithEpisodes = await Promise.all(
+                    foundEpisode.map(async (data) => {
+                        let id = data._id
+                        const UpdateEpi = {
+                            id,
+                            toUpdate: {
+                                isPublished: false
+                            },
+                        };
+
+                        await episodeDataAccess.updateEpisodeById(UpdateEpi);
+
+                    })
+                );
+
+            } else {
+                res.status(404).json({
+                    message: "No Matching Stories Found",
+                });
+            }
+        }
+        else {
+            const foundEpisode2 = await episodeDataAccess.getEpisodeById(StoryId);
+            if (foundEpisode2 && foundEpisode2.length > 0) {
+
+                const storiesWithEpisodes2 = await Promise.all(
+                    foundEpisode2.map(async (data) => {
+                        let id = data._id
+                        const UpdateEpi2 = {
+                            id,
+                            toUpdate: {
+                                isPublished: true
+                            },
+                        };
+
+                        const UpdateEpi3 = {
+                            id,
+                            toUpdate: {
+                                isPublished: false
+                            },
+                        };
+
+
+                        if (await data.characterLimitStatus) {
+
+                            await episodeDataAccess.updateEpisodeById(UpdateEpi2);
+                        }
+                        else {
+                            await episodeDataAccess.updateEpisodeById(UpdateEpi3);
+                        }
+
+                    })
+                );
+
+            } else {
+                res.status(404).json({
+                    message: "No Matching Stories Found",
+                });
+            }
+
+        }
         if (update) {
 
             res.status(200).json({
@@ -183,13 +249,13 @@ exports.deleteStory = async (req, res) => {
     try {
         let id = req.body.storyId
         const DeleteStory = await storyDataAccess.deleteStory(id);
-        if (DeleteStory){
-            await episodeDataAccess.deleteEpisodeByStoryId(id);    
+        if (DeleteStory) {
+            await episodeDataAccess.deleteEpisodeByStoryId(id);
             res.status(200).json({
                 message: "Story deleted",
                 data: DeleteStory
             });
-        }    
+        }
 
     } catch (error) {
         res.status(500).json({
@@ -202,33 +268,33 @@ exports.deleteStory = async (req, res) => {
 
 //add episode: this function is to create an episode for logged-in user.
 exports.addEpisode = async (req, res) => {
-        try {
-            const data = {
-                authorId: req.token_data._id,
-                storyId : req.body.storyId,
-                episodeTitle: req.body.episodeTitle,
-                description: req.body.description,
-                routineType: req.body.routineType,
-                genre: req.body.genre,
-                coverTitle : req.body.coverTitle
-            }
-
-            storedData = await episodeDataAccess.saveEpisode(data)
-            if (storedData) {
-                res.status(200).json({
-                    message: "Episode Saved",
-                    data: storedData
-                });
-
-            }
-
-        } catch (error) {
-            res.status(500).json({
-                message: "Internal Server Error",
-                error: error.message,
-                status: 500
-            });
+    try {
+        const data = {
+            authorId: req.token_data._id,
+            storyId: req.body.storyId,
+            episodeTitle: req.body.episodeTitle,
+            description: req.body.description,
+            routineType: req.body.routineType,
+            genre: req.body.genre,
+            coverTitle: req.body.coverTitle
         }
+
+        storedData = await episodeDataAccess.saveEpisode(data)
+        if (storedData) {
+            res.status(200).json({
+                message: "Episode Saved",
+                data: storedData
+            });
+
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error.message,
+            status: 500
+        });
+    }
 }
 
 
@@ -237,7 +303,7 @@ exports.getEpisode = async (req, res) => {
     try {
         const StoryId = req.params.storyId
         const foundEpisode = await episodeDataAccess.getEpisodeById(StoryId)
-      
+
         if (foundEpisode && foundEpisode.length > 0) {
             res.status(200).json({
                 message: "Episode Found",
@@ -249,7 +315,7 @@ exports.getEpisode = async (req, res) => {
                 status: 404
             });
         }
-    
+
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error",
@@ -261,13 +327,13 @@ exports.getEpisode = async (req, res) => {
 }
 
 //getEpisdodeByIdAndAuthor: this function is to get the episode with episodeId and story
-exports.getEpisodeByIdAndStory = async(req,res)=>{
+exports.getEpisodeByIdAndStory = async (req, res) => {
     try {
         const StoryId = req.params.storyId
         const id = req.params.episodeId
-        const foundEpisode = await episodeDataAccess.getEpisodeByIdAndStory(StoryId,id)
+        const foundEpisode = await episodeDataAccess.getEpisodeByIdAndStory(StoryId, id)
         if (foundEpisode && foundEpisode.length > 0) {
-            
+
             descendingOrderStories = foundEpisode.reverse();
             const Episodes = await Promise.all(
                 descendingOrderStories.map(async (episode) => {
@@ -277,7 +343,7 @@ exports.getEpisodeByIdAndStory = async(req,res)=>{
                         authorDetails: authorData
                     };
                 })
-            ) 
+            )
             res.status(200).json({
                 message: "Episode Found",
                 data: Episodes,
@@ -288,7 +354,7 @@ exports.getEpisodeByIdAndStory = async(req,res)=>{
                 status: 404
             });
         }
-    
+
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error",
@@ -338,7 +404,8 @@ exports.updateEpisode = async (req, res) => {
             toUpdate: {
                 episodeTitle: fieldsToUpdate.episodeTitle,
                 description: fieldsToUpdate.description,
-                isPublished: fieldsToUpdate.isPublished
+                isPublished: fieldsToUpdate.isPublished,
+                characterLimitStatus: fieldsToUpdate.characterLimitStatus
             },
         };
 
@@ -402,7 +469,7 @@ exports.fetchStories = async (req, res) => {
                         ...story.toObject(),
                         backgroundImage: authorData?.backgroundImage,
                         episodes,
-                        authorDetails : authorData
+                        authorDetails: authorData
                     };
                 })
             );
@@ -427,7 +494,7 @@ exports.fetchStories = async (req, res) => {
 
 
 //getEpiodeByAuthor: this function is to fetch the episode based on the logged-in user
-exports.getEpisodeByAuthor = async(req, res) => {
+exports.getEpisodeByAuthor = async (req, res) => {
     try {
         const AuthorId = req.params.authorId;
         const foundEpisode = await episodeDataAccess.getEpisodeByAuthorId(AuthorId);
@@ -511,7 +578,7 @@ exports.findRecentAuthorStories = async (req, res) => {
                         return {
                             ...story.toObject(),
                             backgroundImage: authorData?.backgroundImage,
-                            description : authorData?.description,
+                            description: authorData?.description,
                             episodes
                         };
                     })
