@@ -66,7 +66,8 @@ exports.getStory = async (req, res) => {
                         ...story.toObject(),
                         backgroundImage: authorData?.backgroundImage,
                         episodes,
-                        description : authorData?.description
+                        description : authorData?.description,
+                        authorDetails : authorData
                     };
                 })
             );
