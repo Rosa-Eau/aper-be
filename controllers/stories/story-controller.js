@@ -56,11 +56,38 @@ exports.getStory = async (req, res) => {
         if (stories.length > 0) {
             descendingOrderStories = stories.reverse();
 
-            // Fetch episodes for each story and include backgroundImage
             const storiesWithEpisodes = await Promise.all(
                 descendingOrderStories.map(async (story) => {
                     const episodes = await episodeDataAccess.getEpisodeById(story._id);
                     const authorData = await usersDataAccess.findUserById(story.authorId);
+                    const allEpisodesPublished = episodes.every(episode => episode.isPublished === false);
+                    console.log(allEpisodesPublished)
+                    if (allEpisodesPublished === true) {
+                        let StoryId = story._id
+                        const foundStory = await storyDataAccess.findStoryByStoryId(StoryId);
+                        if (foundStory) {
+                            const UpdateStory = {
+                                StoryId,
+                                toUpdate: {
+                                    isPublished: false
+                                },
+                            };
+                            await storyDataAccess.updateStory(UpdateStory);
+                        }
+                    }
+                    if (allEpisodesPublished === false) {
+                        let StoryId = story._id
+                        const foundStory = await storyDataAccess.findStoryByStoryId(StoryId);
+                        if (foundStory) {
+                            const UpdateStory = {
+                                StoryId,
+                                toUpdate: {
+                                    isPublished: true
+                                },
+                            };
+                            await storyDataAccess.updateStory(UpdateStory);
+                        }
+                    }
 
                     return {
                         ...story.toObject(),
@@ -89,6 +116,7 @@ exports.getStory = async (req, res) => {
         });
     }
 };
+
 
 //getStoryByStoryId : this function is to fetch the story based on storyId
 
