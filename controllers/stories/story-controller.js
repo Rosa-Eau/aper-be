@@ -319,6 +319,16 @@ exports.getEpisode = async (req, res) => {
                     };
                     await storyDataAccess.updateStory(UpdateStory);
                 }
+                else {
+                    const UpdateStory2 = {
+                        StoryId,
+                        toUpdate: {
+                            isPublished: true
+                        },
+                    };
+                    await storyDataAccess.updateStory(UpdateStory2);
+                }
+                
             }
 
             res.status(200).json({
