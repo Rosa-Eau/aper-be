@@ -156,8 +156,8 @@ exports.updateStory = async (req, res) => {
 
         const update = await storyDataAccess.updateStory(UpdateStory);
 
-        const foundEpisode = await episodeDataAccess.getEpisodeById(StoryId);
         if (update.isPublished === false) {
+            const foundEpisode = await episodeDataAccess.getEpisodeById(StoryId);
             if (foundEpisode && foundEpisode.length > 0) {
 
                 const storiesWithEpisodes = await Promise.all(
@@ -421,16 +421,12 @@ exports.updateEpisode = async (req, res) => {
             };
 
             await storyDataAccess.updateStory(UpdateStory);
-            res.status(200).json({
-                message: "Episode Updated",
-                data: update
-            });
+     
         }
-        else {
-            res.status(404).json({
-                message: "Episode Can't be Updated because its not available"
-            });
-        }
+        res.status(200).json({
+            message: "Episode Updated",
+            data: update
+        });
 
     } catch (error) {
         res.status(500).json({
