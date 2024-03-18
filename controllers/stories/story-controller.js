@@ -156,8 +156,8 @@ exports.updateStory = async (req, res) => {
 
         const update = await storyDataAccess.updateStory(UpdateStory);
 
+        const foundEpisode = await episodeDataAccess.getEpisodeById(StoryId);
         if (update.isPublished === false) {
-            const foundEpisode = await episodeDataAccess.getEpisodeById(StoryId);
             if (foundEpisode && foundEpisode.length > 0) {
 
                 const storiesWithEpisodes = await Promise.all(
@@ -182,11 +182,10 @@ exports.updateStory = async (req, res) => {
             }
         }
         else {
-            const foundEpisode2 = await episodeDataAccess.getEpisodeById(StoryId);
-            if (foundEpisode2 && foundEpisode2.length > 0) {
+            if (foundEpisode && foundEpisode.length > 0) {
 
                 const storiesWithEpisodes2 = await Promise.all(
-                    foundEpisode2.map(async (data) => {
+                    foundEpisode.map(async (data) => {
                         let id = data._id
                         const UpdateEpi2 = {
                             id,
