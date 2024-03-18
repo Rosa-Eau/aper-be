@@ -182,10 +182,11 @@ exports.updateStory = async (req, res) => {
             }
         }
         else {
-            if (foundEpisode && foundEpisode.length > 0) {
+            const foundEpisode2 = await episodeDataAccess.getEpisodeById(StoryId);
+            if (foundEpisode2 && foundEpisode2.length > 0) {
 
                 const storiesWithEpisodes2 = await Promise.all(
-                    foundEpisode.map(async (data) => {
+                    foundEpisode2.map(async (data) => {
                         let id = data._id
                         const UpdateEpi2 = {
                             id,
