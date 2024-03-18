@@ -298,16 +298,32 @@ exports.addEpisode = async (req, res) => {
 }
 
 
+
 // getEpisode: this function is for fetching the episode by storyId
 exports.getEpisode = async (req, res) => {
     try {
-        const StoryId = req.params.storyId
-        const foundEpisode = await episodeDataAccess.getEpisodeById(StoryId)
+        const StoryId = req.params.storyId;
+        const foundEpisodes = await episodeDataAccess.getEpisodeById(StoryId);
 
-        if (foundEpisode && foundEpisode.length > 0) {
+        if (foundEpisodes && foundEpisodes.length > 0) {
+            const allEpisodesPublished = foundEpisodes.every(episode => episode.isPublished);
+
+            if (allEpisodesPublished===false) {
+                const story = await storyDataAccess.findStoryByStoryId(StoryId);
+                if (story) {
+                    const UpdateStory = {
+                        StoryId,
+                        toUpdate: {
+                            isPublished: false
+                        },
+                    };
+                    await storyDataAccess.updateStory(UpdateStory);
+                }
+            }
+
             res.status(200).json({
-                message: "Episode Found",
-                data: foundEpisode
+                message: "Episodes Found",
+                data: foundEpisodes
             });
         } else {
             res.status(404).json({
@@ -325,6 +341,7 @@ exports.getEpisode = async (req, res) => {
 
     }
 }
+
 
 //getEpisdodeByIdAndAuthor: this function is to get the episode with episodeId and story
 exports.getEpisodeByIdAndStory = async (req, res) => {
