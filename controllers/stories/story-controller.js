@@ -410,8 +410,17 @@ exports.updateEpisode = async (req, res) => {
         };
 
         const update = await episodeDataAccess.updateEpisodeById(UpdateEpisode);
-        if (update) {
 
+        if (update.isPublished === true) {
+            let StoryId = update?.storyId
+            const UpdateStory = {
+                StoryId,
+                toUpdate: {
+                    isPublished: true
+                },
+            };
+
+            await storyDataAccess.updateStory(UpdateStory);
             res.status(200).json({
                 message: "Episode Updated",
                 data: update
