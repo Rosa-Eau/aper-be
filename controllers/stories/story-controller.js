@@ -306,9 +306,9 @@ exports.getEpisode = async (req, res) => {
         const foundEpisodes = await episodeDataAccess.getEpisodeById(StoryId);
 
         if (foundEpisodes && foundEpisodes.length > 0) {
-            const allEpisodesPublished = foundEpisodes.every(episode => episode.isPublished);
-
-            if (allEpisodesPublished===false) {
+            const allEpisodesPublished = foundEpisodes.every(episode => episode.isPublished ===false);
+            console.log(allEpisodesPublished)
+            if (allEpisodesPublished===true) {
                 const story = await storyDataAccess.findStoryByStoryId(StoryId);
                 if (story) {
                     const UpdateStory = {
@@ -317,18 +317,20 @@ exports.getEpisode = async (req, res) => {
                             isPublished: false
                         },
                     };
-                    await storyDataAccess.updateStory(UpdateStory);
-                }
-                else {
-                    const UpdateStory2 = {
+                    const updateD=await storyDataAccess.updateStory(UpdateStory);
+                }        
+            }
+            if (allEpisodesPublished ===false){
+                const story = await storyDataAccess.findStoryByStoryId(StoryId);
+                if (story) {
+                    const UpdateStory = {
                         StoryId,
                         toUpdate: {
                             isPublished: true
                         },
                     };
-                    await storyDataAccess.updateStory(UpdateStory2);
-                }
-                
+                    const updateD=await storyDataAccess.updateStory(UpdateStory);
+                }    
             }
 
             res.status(200).json({
