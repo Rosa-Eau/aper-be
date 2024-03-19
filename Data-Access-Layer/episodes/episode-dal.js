@@ -79,6 +79,30 @@ const updateEpisodeById = async (storyData) => {
     }
 }
 
+const updateEpisodeByStoryId = async (storyData) => {
+    try {
+        const result = await Episode.updateMany(
+            { storyId: storyData.id },
+            { $set: storyData.toUpdate }
+        );
+        return result;
+    } catch (error) {
+        console.log(error);
+       
+    }
+}
+
+const getEpisode =  async(Id) =>{
+    try {
+        const foundEpisode = await Episode.findOne({_id: Id  });
+        return foundEpisode;
+        
+    } catch (error) {
+        console.log(err)
+        
+    }
+}
+
 const findEpisodesByFilter = async (filter) => {
     try {
         const episodes = await Episode.find(filter);
@@ -88,4 +112,4 @@ const findEpisodesByFilter = async (filter) => {
         throw error;
     }
 };
-module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById , deleteEpisodeByStoryId , getEpisodeByIdAndStory,getEpisodeByAuthorId, findEpisodesByFilter}
+module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById , deleteEpisodeByStoryId , getEpisodeByIdAndStory,getEpisodeByAuthorId, findEpisodesByFilter,updateEpisodeByStoryId,getEpisode}

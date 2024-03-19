@@ -61,7 +61,6 @@ exports.getStory = async (req, res) => {
                     const episodes = await episodeDataAccess.getEpisodeById(story._id);
                     const authorData = await usersDataAccess.findUserById(story.authorId);
                     const allEpisodesPublished = episodes.every(episode => episode.isPublished === false);
-                    console.log(allEpisodesPublished)
                     if (allEpisodesPublished === true) {
                         let StoryId = story._id
                         const foundStory = await storyDataAccess.findStoryByStoryId(StoryId);
@@ -621,6 +620,7 @@ exports.searchStories = async (req, res) => {
     }
 };
 
+
 //findRecentAuthorStories: this function is to fetch the recent authors stories
 exports.findRecentAuthorStories = async (req, res) => {
     try {
@@ -657,6 +657,95 @@ exports.findRecentAuthorStories = async (req, res) => {
             message: "Recent Authors and Their Stories Found",
             data: storiesWithEpisodes,
         });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error.message,
+            status: 500,
+        });
+    }
+};
+
+// for stories
+exports.publishStories = async (req, res) => {
+    try {
+        const storyId = req.body.storyId
+        const episodeId = req.body.episodeId
+        let id = storyId
+        const UpdateEpisode = {
+            id,
+            toUpdate: {
+                isPublished: false
+            },
+        };
+
+        const episodeData = await episodeDataAccess.getEpisodeById(storyId);
+        const storyData = await storyDataAccess.findStoryByStoryId(storyId);
+        if (storyData.isPublished===false){
+            await episodeDataAccess.updateEpisodeByStoryId(UpdateEpisode);
+        }
+        else {
+         
+           episodeData.forEach(async (episode)=>{
+            let id = episode._id
+            const UpdateEpisode2 = {
+                id,
+                toUpdate: {
+                    isPublished: true
+                },
+            };
+
+            const UpdateEpisode3 = {
+                id,
+                toUpdate: {
+                    isPublished: false
+                },
+            };
+            if (episode.characterLimitStatus === true){
+                await episodeDataAccess.updateEpisodeById(UpdateEpisode2);
+            }
+            else {
+                await episodeDataAccess.updateEpisodeById(UpdateEpisode3);
+            }
+           })
+    
+        }
+        res.status(200).json({
+            message: "Success",
+            data: storyData,
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error.message,
+            status: 500,
+        });
+    }
+};
+
+//for episodes
+exports.publishEpisodes = async (req, res) => {
+    try {
+        const episodeId = req.body.episodeId
+       
+     const episodeData = await episodeDataAccess.getEpisode(episodeId);
+     let id = episodeData.storyId
+     const UpdateEpisode = {
+         id,
+         toUpdate: {
+             isPublished: true
+         },
+     };
+     if (episodeData.isPublished===true){
+        await storyDataAccess.updateStory(UpdateEpisode)
+     }
+
+     res.status(200).json({
+        message: "Success",
+        data: episodeData,
+    });
+
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error",
