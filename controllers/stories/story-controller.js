@@ -555,15 +555,32 @@ exports.fetchStories = async (req, res) => {
 
 
 //getEpiodeByAuthor: this function is to fetch the episode based on the logged-in user
+//getEpisodeByAuthor: this function is to fetch the episodes based on the logged-in user along with story details
 exports.getEpisodeByAuthor = async (req, res) => {
     try {
         const AuthorId = req.params.authorId;
         const foundEpisode = await episodeDataAccess.getEpisodeByAuthorId(AuthorId);
         const descendingOrderEpisodes = foundEpisode.reverse();
         if (foundEpisode && foundEpisode.length > 0) {
+            const episodesWithStories = await Promise.all(
+                descendingOrderEpisodes.map(async (episode) => {
+                    const story = await storyDataAccess.findStoryByStoryId(episode.storyId);
+                    const authorData = await usersDataAccess.findUserById(story.authorId);
+
+                    return {
+                      episode,
+                        story: {
+                            ...story.toObject(),
+                            backgroundImage: authorData?.backgroundImage,
+                            description: authorData?.description
+                        }
+                    };
+                })
+            );
+
             res.status(200).json({
                 message: "Episodes Found",
-                data: descendingOrderEpisodes
+                data: episodesWithStories
             });
         } else {
             res.status(404).json({
@@ -580,6 +597,7 @@ exports.getEpisodeByAuthor = async (req, res) => {
         });
     }
 }
+
 
 exports.searchStories = async (req, res) => {
     try {
