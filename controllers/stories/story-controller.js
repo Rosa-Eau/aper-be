@@ -555,7 +555,6 @@ exports.fetchStories = async (req, res) => {
 
 
 //getEpiodeByAuthor: this function is to fetch the episode based on the logged-in user
-//getEpisodeByAuthor: this function is to fetch the episodes based on the logged-in user along with story details
 exports.getEpisodeByAuthor = async (req, res) => {
     try {
         const AuthorId = req.params.authorId;
@@ -568,12 +567,9 @@ exports.getEpisodeByAuthor = async (req, res) => {
                     const authorData = await usersDataAccess.findUserById(story.authorId);
 
                     return {
-                      episode,
-                        story: {
-                            ...story.toObject(),
-                            backgroundImage: authorData?.backgroundImage,
-                            description: authorData?.description
-                        }
+                        ...episode.toObject(),
+                            lineStyle: story.lineStyle 
+                    
                     };
                 })
             );
@@ -597,7 +593,6 @@ exports.getEpisodeByAuthor = async (req, res) => {
         });
     }
 }
-
 
 exports.searchStories = async (req, res) => {
     try {
