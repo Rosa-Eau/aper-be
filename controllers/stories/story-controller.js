@@ -1,6 +1,7 @@
 const storyDataAccess = require("../../Data-Access-Layer/stories/story-dal")
 const usersDataAccess = require("../../Data-Access-Layer/users/user-dal")
-const episodeDataAccess = require("../../Data-Access-Layer/episodes/episode-dal")
+const episodeDataAccess = require("../../Data-Access-Layer/episodes/episode-dal");
+const { compareSync } = require("bcrypt");
 
 //addStory : this function is to create a story for logged-in user.
 exports.addStory = async (req, res) => {
@@ -562,15 +563,15 @@ exports.getEpisodeByAuthor = async (req, res) => {
         const descendingOrderEpisodes = foundEpisode.reverse();
         if (foundEpisode && foundEpisode.length > 0) {
             const episodesWithStories = await Promise.all(
-                descendingOrderEpisodes.map(async (episode) => {
-                    if(episode.storyId!=null){
+                descendingOrderEpisodes
+                    .filter(episode => episode.storyId !== null) 
+                    .map(async (episode) => {
                         const story = await storyDataAccess.findStoryByStoryId(episode.storyId);
                         return {
                             ...episode.toObject(),
-                                lineStyle: story.lineStyle 
+                            lineStyle: story.lineStyle
                         };
-                    }
-                })
+                    })
             );
 
             res.status(200).json({
@@ -592,6 +593,7 @@ exports.getEpisodeByAuthor = async (req, res) => {
         });
     }
 }
+
 
 exports.searchStories = async (req, res) => {
     try {
