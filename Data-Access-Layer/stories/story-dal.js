@@ -93,4 +93,9 @@ const searchStory = async (key) => {
 };
 
 
-module.exports = { storeStory, findStoryById , updateStory , deleteStory , findStoryWithEpisode, findAllStories ,findStoriesByFilter , searchStory,findStoryByStoryId}
+const deleteStoryByAuthor= async (id) => {
+    const story = await Story.deleteMany({authorId: id});
+    return story;
+  };
+
+module.exports = { storeStory, findStoryById , updateStory , deleteStory , findStoryWithEpisode, findAllStories ,findStoriesByFilter , searchStory,findStoryByStoryId, deleteStoryByAuthor}

@@ -4,6 +4,8 @@ const usersDataAccess = require("../../Data-Access-Layer/users/user-dal")
 const imageDataAccess = require("../../Data-Access-Layer/users/image.dal")
 const { generateAccessToken } = require("../../middlewares/jsonWebToken")
 const AWS = require('aws-sdk');
+const storyDataAccess = require("../../Data-Access-Layer/stories/story-dal");
+const episodeDataAccess = require("../../Data-Access-Layer/episodes/episode-dal");
 //S3 credentials
 AWS.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -203,6 +205,9 @@ exports.deleteMembership = async (req, res) => {
         let id = req.token_data._id;
             const deleteUser = await usersDataAccess.deleteMembership(id)
             if (deleteUser) {
+                await storyDataAccess.deleteStoryByAuthor(id)
+                await episodeDataAccess.deleteEpisodeByAuthor(id)
+                await 
                 res.status(200).json({
                     message: "User Deleted",
                     data: deleteUser

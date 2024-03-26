@@ -65,6 +65,19 @@ const deleteEpisode = async (id) => {
     }
   
  }
+
+
+ const deleteEpisodeByAuthor = async (id)=>{
+    try {
+        
+        const episode= await Episode.deleteMany({authorId : id});
+        if (episode){    
+            return episode;
+        }
+    } catch (error) {
+        return error.message
+    }
+ }
  
 const updateEpisodeById = async (storyData) => {
     try {
@@ -112,4 +125,4 @@ const findEpisodesByFilter = async (filter) => {
         throw error;
     }
 };
-module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById , deleteEpisodeByStoryId , getEpisodeByIdAndStory,getEpisodeByAuthorId, findEpisodesByFilter,updateEpisodeByStoryId,getEpisode}
+module.exports = { saveEpisode,getEpisodeById , deleteEpisode , updateEpisodeById , deleteEpisodeByStoryId , getEpisodeByIdAndStory,getEpisodeByAuthorId, findEpisodesByFilter,updateEpisodeByStoryId,getEpisode, deleteEpisodeByAuthor}
