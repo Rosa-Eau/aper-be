@@ -563,13 +563,13 @@ exports.getEpisodeByAuthor = async (req, res) => {
         if (foundEpisode && foundEpisode.length > 0) {
             const episodesWithStories = await Promise.all(
                 descendingOrderEpisodes.map(async (episode) => {
-                    if(episode.storyId!=null){
+                    // if(episode.storyId!=null){
                         const story = await storyDataAccess.findStoryByStoryId(episode.storyId);
                         return {
                             ...episode.toObject(),
                                 lineStyle: story.lineStyle 
                         };
-                    }
+                    // }
                 })
             );
 
