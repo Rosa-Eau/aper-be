@@ -183,6 +183,18 @@ exports.updateStory = async (req, res) => {
         };
 
         const update = await storyDataAccess.updateStory(UpdateStory);
+        if (update) {
+
+            res.status(200).json({
+                message: "Story Updated",
+                data: update
+            });
+        }
+        else {
+            res.status(404).json({
+                message: "Story Can't be Updated because its not available"
+            });
+        }
 
         if (update.isPublished === false) {
             const foundEpisode = await episodeDataAccess.getEpisodeById(StoryId);
@@ -203,11 +215,7 @@ exports.updateStory = async (req, res) => {
                     })
                 );
 
-            } else {
-                res.status(404).json({
-                    message: "No Matching Stories Found",
-                });
-            }
+            } 
         }
         else {
             const foundEpisode2 = await episodeDataAccess.getEpisodeById(StoryId);
@@ -223,45 +231,29 @@ exports.updateStory = async (req, res) => {
                             },
                         };
 
-                        const UpdateEpi3 = {
-                            id,
-                            toUpdate: {
-                                isPublished: false
-                            },
-                        };
+                        // const UpdateEpi3 = {
+                        //     id,
+                        //     toUpdate: {
+                        //         isPublished: false
+                        //     },
+                        // };
 
 
-                        if (await data.characterLimitStatus) {
+                        // if (await data.characterLimitStatus) {
 
                             await episodeDataAccess.updateEpisodeById(UpdateEpi2);
-                        }
-                        else {
-                            await episodeDataAccess.updateEpisodeById(UpdateEpi3);
-                        }
+                        // }
+                        // else {
+                        //     await episodeDataAccess.updateEpisodeById(UpdateEpi3);
+                        // }
 
                     })
                 );
 
-            } else {
-                res.status(404).json({
-                    message: "No Matching Stories Found",
-                });
             }
 
         }
-        if (update) {
-
-            res.status(200).json({
-                message: "Story Updated",
-                data: update
-            });
-        }
-        else {
-            res.status(404).json({
-                message: "Story Can't be Updated because its not available"
-            });
-        }
-
+        
     } catch (error) {
         console.error("Error updating story:", error);
         res.status(500).json({
@@ -335,7 +327,6 @@ exports.getEpisode = async (req, res) => {
 
         if (foundEpisodes && foundEpisodes.length > 0) {
             const allEpisodesPublished = foundEpisodes.every(episode => episode.isPublished ===false);
-            console.log(allEpisodesPublished)
             if (allEpisodesPublished===true) {
                 const story = await storyDataAccess.findStoryByStoryId(StoryId);
                 if (story) {
@@ -395,9 +386,13 @@ exports.getEpisodeByIdAndStory = async (req, res) => {
             const Episodes = await Promise.all(
                 descendingOrderStories.map(async (episode) => {
                     const authorData = await usersDataAccess.findUserById(episode.authorId);
+                    const story = await storyDataAccess.findStoryByStoryId(episode.storyId);
                     return {
                         ...episode.toObject(),
-                        authorDetails: authorData
+                        authorDetails: authorData,
+                        lineStyle : story.lineStyle,
+                        genre: story.genre,
+                        coverTitle: story.coverTitle
                     };
                 })
             )
@@ -569,7 +564,9 @@ exports.getEpisodeByAuthor = async (req, res) => {
                         const story = await storyDataAccess.findStoryByStoryId(episode.storyId);
                         return {
                             ...episode.toObject(),
-                            lineStyle: story.lineStyle
+                            lineStyle: story.lineStyle,
+                            coverTitle : story.coverTitle,
+                            genre : story.genre
                         };
                     })
             );
