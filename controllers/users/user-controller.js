@@ -203,21 +203,21 @@ exports.getUserDetails = async (req, res) => {
 exports.deleteMembership = async (req, res) => {
     try {
         let id = req.token_data._id;
-            const deleteUser = await usersDataAccess.deleteMembership(id)
-            if (deleteUser) {
-                await storyDataAccess.deleteStoryByAuthor(id)
-                await episodeDataAccess.deleteEpisodeByAuthor(id)
-                await 
+        const deleteUser = await usersDataAccess.deleteMembership(id)
+        if (deleteUser) {
+            await storyDataAccess.deleteStoryByAuthor(id)
+            await episodeDataAccess.deleteEpisodeByAuthor(id)
+            await
                 res.status(200).json({
                     message: "User Deleted",
                     data: deleteUser
                 });
-            }
-            else {
-                res.status(400).json({
-                    message: "User Not Deleted",
-                });
-            }
+        }
+        else {
+            res.status(400).json({
+                message: "User Not Deleted",
+            });
+        }
 
     } catch (err) {
         res.json({
@@ -244,7 +244,8 @@ exports.updateUserDetails = async (req, res) => {
             _id,
             toUpdate: {},
         };
-        // Only include fields with values in the toUpdate object
+
+
         if (data.penName) {
             updateData.toUpdate.penName = data.penName;
         }
@@ -257,17 +258,30 @@ exports.updateUserDetails = async (req, res) => {
             updateData.toUpdate.password = data.password;
         }
 
-        const update = usersDataAccess.updateUserDetails(updateData);
-
-        if (update) {
-            res.status(200).json({
-                message: "User Updated"
-            });
-        } else {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
-            res.status(400).json({                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-                message: "User Not Updated",
+        const existingUser = await usersDataAccess.getUserByEmail(data.email);
+        if (existingUser) {
+            res.status(400).json({
+                message: 'Email already exists. Please choose a different email.',
+                status: res.statusCode
             });
         }
+        else {
+
+            const update = usersDataAccess.updateUserDetails(updateData);
+
+            if (update) {
+                res.status(200).json({
+                    message: "User Updated"
+                });
+            } else {
+                res.status(400).json({
+                    message: "User Not Updated",
+                });
+            }
+
+        }
+
+
     } catch (err) {
         res.status(500).json({
             message: "Something went wrong",
@@ -278,13 +292,13 @@ exports.updateUserDetails = async (req, res) => {
 };
 
 //verifyPassword : This function will match the password(given in a body) with the logged-in user password.
-exports.verifyPassword = async(req,res)=>{
+exports.verifyPassword = async (req, res) => {
     try {
         let id = req.token_data._id;
         const userData = await usersDataAccess.findUserById(id);
-   
+
         const match = bcrypt.compareSync(req.body.password, userData.password);
-        if (match){
+        if (match) {
             res.status(200).json({
                 message: "Password matched"
             });
@@ -304,15 +318,15 @@ exports.verifyPassword = async(req,res)=>{
 }
 
 //saveImage: this api is to save the local imagepath to the database.
-exports.saveImage = async(req,res)=>{
+exports.saveImage = async (req, res) => {
 
     try {
         const data = {
-            imagePath : req.body.imagePath,
-            email : req.body.email
+            imagePath: req.body.imagePath,
+            email: req.body.email
         }
         let Email = data?.email
-        let backgroundImage= data?.imagePath
+        let backgroundImage = data?.imagePath
         const updateImage = {
             Email,
             toUpdate: {
@@ -328,7 +342,7 @@ exports.saveImage = async(req,res)=>{
 
         storedData = await imageDataAccess.storeImage(data)
         if (storedData) {
-             await usersDataAccess.updateUser(updateImage);
+            await usersDataAccess.updateUser(updateImage);
             res.status(200).json({
                 message: "Image Path Saved",
                 data: storedData
@@ -347,7 +361,7 @@ exports.saveImage = async(req,res)=>{
 
 
 //getImage: this api is to get the image path from the database.
-exports.getImage = async(req,res)=>{
+exports.getImage = async (req, res) => {
     try {
         const Email = req.params.email;
         const imageData = await imageDataAccess.getImage(Email);
