@@ -245,12 +245,21 @@ exports.updateUserDetails = async (req, res) => {
             toUpdate: {},
         };
 
-
         if (data.penName) {
             updateData.toUpdate.penName = data.penName;
         }
 
         if (data.email) {
+            const currentUser = await usersDataAccess.findUserById(_id);
+            if (currentUser.email !== data.email) {
+                const existingUser = await usersDataAccess.getUserByEmail(data.email);
+                if (existingUser) {
+                    return res.status(400).json({
+                        message: 'Email already exists. Please choose a different email.',
+                        status: res.statusCode
+                    });
+                }
+            }
             updateData.toUpdate.email = data.email;
         }
 
@@ -258,30 +267,17 @@ exports.updateUserDetails = async (req, res) => {
             updateData.toUpdate.password = data.password;
         }
 
-        const existingUser = await usersDataAccess.getUserByEmail(data.email);
-        if (existingUser) {
+        const update = await usersDataAccess.updateUserDetails(updateData);
+
+        if (update) {
+            res.status(200).json({
+                message: "User Updated"
+            });
+        } else {
             res.status(400).json({
-                message: 'Email already exists. Please choose a different email.',
-                status: res.statusCode
+                message: "User Not Updated",
             });
         }
-        else {
-
-            const update = usersDataAccess.updateUserDetails(updateData);
-
-            if (update) {
-                res.status(200).json({
-                    message: "User Updated"
-                });
-            } else {
-                res.status(400).json({
-                    message: "User Not Updated",
-                });
-            }
-
-        }
-
-
     } catch (err) {
         res.status(500).json({
             message: "Something went wrong",
@@ -290,6 +286,7 @@ exports.updateUserDetails = async (req, res) => {
         });
     }
 };
+
 
 //verifyPassword : This function will match the password(given in a body) with the logged-in user password.
 exports.verifyPassword = async (req, res) => {
