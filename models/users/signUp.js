@@ -22,4 +22,10 @@ const signUpSchema = new mongoose.Schema({
     }
 })
 
+signUpSchema.set('toJSON', {
+    transform: function (doc, ret) {
+        delete ret.password;
+    }
+});
+
 module.exports = mongoose.model('User', signUpSchema)
