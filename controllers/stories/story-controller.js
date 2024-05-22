@@ -1,7 +1,7 @@
 const storyDataAccess = require("../../Data-Access-Layer/stories/story-dal")
 const usersDataAccess = require("../../Data-Access-Layer/users/user-dal")
 const episodeDataAccess = require("../../Data-Access-Layer/episodes/episode-dal");
-const { compareSync } = require("bcrypt");
+const { compareSync, genSalt } = require("bcrypt");
 
 //addStory : this function is to create a story for logged-in user.
 exports.addStory = async (req, res) => {
@@ -159,8 +159,9 @@ exports.getStoryByStoryId = async (req, res) => {
 //updateStory: this function is to update a story based on storyId that is given in parameter.
 exports.updateStory = async (req, res) => {
     try {
-        let StoryId = req.params.storyId
-        let fieldsToUpdate = req.body
+        let StoryId = req.params.storyId;
+        let fieldsToUpdate = req.body;
+
         // Validate fieldsToUpdate
         if (!fieldsToUpdate || Object.keys(fieldsToUpdate).length === 0) {
             return res.status(400).json({
@@ -182,48 +183,54 @@ exports.updateStory = async (req, res) => {
             },
         };
 
-        const update = await storyDataAccess.updateStory(UpdateStory);
-        if (update) {
-
-            res.status(200).json({
-                message: "Story Updated",
-                data: update
-            });
-        }
-        else {
-            res.status(404).json({
-                message: "Story Can't be Updated because its not available"
+        const updatedStory = await storyDataAccess.updateStory(UpdateStory);
+        if (!updatedStory) {
+            return res.status(404).json({
+                message: "Story Can't be Updated because it is not available"
             });
         }
 
-        if (update.isPublished === false) {
+        // Update episodes with new coverTitle
+        const episodes = await episodeDataAccess.getEpisodeById(StoryId);
+        if (episodes && episodes.length > 0) {
+            await Promise.all(
+                episodes.map(async (episode) => {
+                    const UpdateEpisode = {
+                        id: episode._id,
+                        toUpdate: {
+                            coverTitle: fieldsToUpdate.coverTitle,
+                            genre : fieldsToUpdate.genre,
+                            
+                        },
+                    };
+                    await episodeDataAccess.updateEpisodeById(UpdateEpisode);
+                })
+            );
+        }
+
+        // Handle the isPublished field for episodes
+        if (updatedStory.isPublished === false) {
             const foundEpisode = await episodeDataAccess.getEpisodeById(StoryId);
             if (foundEpisode && foundEpisode.length > 0) {
-
                 const storiesWithEpisodes = await Promise.all(
                     foundEpisode.map(async (data) => {
-                        let id = data._id
+                        let id = data._id;
                         const UpdateEpi = {
                             id,
                             toUpdate: {
                                 isPublished: false
                             },
                         };
-
                         await episodeDataAccess.updateEpisodeById(UpdateEpi);
-
                     })
                 );
-
-            } 
-        }
-        else {
+            }
+        } else {
             const foundEpisode2 = await episodeDataAccess.getEpisodeById(StoryId);
             if (foundEpisode2 && foundEpisode2.length > 0) {
-
                 const storiesWithEpisodes2 = await Promise.all(
                     foundEpisode2.map(async (data) => {
-                        let id = data._id
+                        let id = data._id;
                         const UpdateEpi2 = {
                             id,
                             toUpdate: {
@@ -238,22 +245,20 @@ exports.updateStory = async (req, res) => {
                         //     },
                         // };
 
-
                         // if (await data.characterLimitStatus) {
-
                             await episodeDataAccess.updateEpisodeById(UpdateEpi2);
-                        // }
-                        // else {
+                        // } else {
                         //     await episodeDataAccess.updateEpisodeById(UpdateEpi3);
                         // }
-
                     })
                 );
-
             }
-
         }
-        
+
+        res.status(200).json({
+            message: "Story Updated",
+            data: updatedStory
+        });
     } catch (error) {
         console.error("Error updating story:", error);
         res.status(500).json({
@@ -263,6 +268,7 @@ exports.updateStory = async (req, res) => {
         });
     }
 }
+
 
 //deleteStory: this function is to delete the story based on storyId that is given in the body.
 exports.deleteStory = async (req, res) => {
