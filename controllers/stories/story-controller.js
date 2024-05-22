@@ -129,12 +129,16 @@ exports.getStoryByStoryId = async (req, res) => {
             const episodes = await episodeDataAccess.getEpisodeById(story._id);
             const authorData = await usersDataAccess.findUserById(story.authorId);
 
+            // Get updated penName from authorData
+            const updatedPenName = authorData?.penName;
+
             const storyWithEpisodes = {
                 ...story.toObject(),
                 backgroundImage: authorData?.backgroundImage,
                 episodes,
                 email: authorData?.email,
-                description: authorData?.description
+                description: authorData?.description,
+                authorName: updatedPenName 
             };
 
             res.status(200).json({
@@ -154,6 +158,7 @@ exports.getStoryByStoryId = async (req, res) => {
         });
     }
 };
+
 
 
 //updateStory: this function is to update a story based on storyId that is given in parameter.
@@ -200,7 +205,7 @@ exports.updateStory = async (req, res) => {
                         toUpdate: {
                             coverTitle: fieldsToUpdate.coverTitle,
                             genre : fieldsToUpdate.genre,
-                            
+
                         },
                     };
                     await episodeDataAccess.updateEpisodeById(UpdateEpisode);
@@ -654,11 +659,15 @@ exports.findRecentAuthorStories = async (req, res) => {
                         const episodes = await episodeDataAccess.getEpisodeById(story._id);
                         const authorData = await usersDataAccess.findUserById(story.authorId);
 
+                        // Get updated penName from authorData
+                        const updatedPenName = authorData?.penName;
+
                         return {
                             ...story.toObject(),
                             backgroundImage: authorData?.backgroundImage,
                             description: authorData?.description,
-                            episodes
+                            episodes,
+                            authorName: updatedPenName 
                         };
                     })
                 );
@@ -682,6 +691,7 @@ exports.findRecentAuthorStories = async (req, res) => {
         });
     }
 };
+
 
 // for stories
 exports.publishStories = async (req, res) => {
