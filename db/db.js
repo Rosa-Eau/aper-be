@@ -1,7 +1,7 @@
 // const { MongoClient, ServerApiVersion } = require('mongodb');
 const mongoose = require('mongoose')
 require('dotenv').config();
-const uri = process.env.database_uri
+const uri = 'mongodb+srv://apercreatorclub:apercreator@cluster0.pfvujjo.mongodb.net/?retryWrites=true&w=majority'
 const mongoConnection = ()=>{
   const connection = mongoose.connect(uri)
   if(connection){
